@@ -57,7 +57,7 @@ const EditUserDetailsModal = ({ isOpen, onClose, user }: EditUserModalProps) => 
         e.preventDefault();
 
         // Here you would typically make an API call to update the user
-        console.log("Updating user:", user.id, formData);
+        console.log("Updating user:", user?.id, formData);
 
         toast.success("Success",{description: "User updated successfully"});
 

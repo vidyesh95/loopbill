@@ -4,23 +4,35 @@ import TopStatisticsCards from "@/components/admin/reports/top-statistics-cards"
 import AgentPerformance from "@/components/admin/reports/agent-performance";
 import ComplaintStatusBreakdown from "@/components/admin/reports/complaint-status-breakdown";
 import ServiceTrends from "@/components/admin/reports/service-trends";
+import {
+    getAgentPerformance,
+    getComplaintStatusBreakdown,
+    getDashboardStats,
+    getServiceTrends,
+} from "@/lib/db/queries";
 
-export default function Reports() {
+export default async function Reports() {
+    const [stats, agentPerformance, complaintStatus, serviceTrends] = await Promise.all([
+        getDashboardStats(),
+        getAgentPerformance(),
+        getComplaintStatusBreakdown(),
+        getServiceTrends(),
+    ]);
+
     return (
         <main className="w-full flex flex-col gap-4">
-            {/*Heading and Description*/}
             <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-2">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold">Reports</h1>
+                    <h1 className="text-2xl font-bold md:text-3xl">Reports</h1>
                     <p className="text-muted-foreground">Overview of UrbanPestMaster operations</p>
                 </div>
                 <Button className="cursor-pointer"><Download/>Export report</Button>
             </div>
-            <TopStatisticsCards/>
+            <TopStatisticsCards stats={stats}/>
             <hr/>
-            <AgentPerformance/>
-            <ComplaintStatusBreakdown/>
-            <ServiceTrends/>
+            <AgentPerformance data={agentPerformance}/>
+            <ComplaintStatusBreakdown data={complaintStatus}/>
+            <ServiceTrends data={serviceTrends}/>
         </main>
     );
 }

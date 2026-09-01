@@ -9,35 +9,63 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Put Turso credentials in `.env` (`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`) and keep `BETTER_AUTH_URL=http://localhost:3000`. Then migrate, seed, and start the app on port 3000:
 
 ```bash
+npm run db:migrate
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) and sign in as:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Email: `rajesh.kumar@pestcontrol.com`
+- Password: `Password123!`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Other seeded staff use the same password. Customers are records only — they do not get portal logins.
+
+## Database
+
+This app uses **SQLite via Drizzle**. A `file:local.db` file is fine on your machine. **Do not use a local `.db` file on Vercel** — serverless disks are ephemeral.
+
+For Vercel Hobby, create a free [Turso](https://turso.tech) database (hosted SQLite):
+
+```bash
+turso db create loopbill
+turso db tokens create loopbill
+```
+
+Then set these in `.env` locally and on the Vercel project:
+
+- `TURSO_DATABASE_URL` — `libsql://...turso.io`
+- `TURSO_AUTH_TOKEN`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL` — `http://localhost:3000` locally, your Vercel URL in production
+
+Apply schema and seed against whichever URL is in the env file:
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
+
+`db:seed` is idempotent (wipe and reseed). Extra demo rows are generated with a fixed RNG so they stay the same each run.
+
+## Auth
+
+[Better Auth](https://www.better-auth.com) handles email/password sessions. Roles (`admin`, `salesperson`, `agent`) live on the user row. `/admin`, `/agent`, and `/salesperson` require a session; each layout also checks role.
+
+Public sign-up is closed after staff exist. Create additional users from the admin portal later.
+
+Google sign-in is not wired yet.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Better Auth](https://www.better-auth.com/docs)
+- [Turso + Drizzle](https://docs.turso.tech/sdk/ts/orm/drizzle)
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy the Next.js app as usual. There is no separate backend. After the first deploy, set the four env vars above, run `db:migrate` and `db:seed` against the Turso URL, then redeploy if needed.

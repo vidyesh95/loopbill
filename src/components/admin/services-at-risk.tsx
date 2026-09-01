@@ -2,7 +2,9 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 
-const servicesAtRisk = [
+import type {ServiceAtRiskRow} from "@/lib/data/types";
+
+const servicesAtRisk: ServiceAtRiskRow[] = [
     {
         id: 1,
         customer: 'Rohit Khanna',
@@ -41,7 +43,7 @@ const servicesAtRisk = [
     }
 ]
 
-export default function ServicesAtRisk() {
+export default function ServicesAtRisk({items = servicesAtRisk}: {items?: ServiceAtRiskRow[]}) {
     return (
         <Card>
             <CardHeader>
@@ -61,7 +63,7 @@ export default function ServicesAtRisk() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {servicesAtRisk.map((service) => (
+                        {items.map((service) => (
                             <TableRow key={service.id}>
                                 <TableCell>{service.customer}</TableCell>
                                 <TableCell>{service.package}</TableCell>

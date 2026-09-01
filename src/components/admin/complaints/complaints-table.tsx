@@ -4,8 +4,9 @@ import ComplaintsTablePagination from "@/components/admin/complaints/complaints-
 import FilterByPriority from "@/components/admin/complaints/filter-by-priority";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
+import type {ComplaintRow} from "@/lib/data/types";
 
-export const allComplaints = [
+const allComplaints: ComplaintRow[] = [
     {
         complaintId: 1,
         customer: 'Amit Sharma',
@@ -156,9 +157,9 @@ const getPriorityColor = (priority: string) => {
     }
 }
 
-const renderComplaints = () => {
-    if (allComplaints.length === 0) {
-        return <p>No services match the current filters.</p>;
+const renderComplaints = (rows: ComplaintRow[]) => {
+    if (rows.length === 0) {
+        return <p>No complaints match the current filters.</p>;
     }
     return (
         <Table>
@@ -175,7 +176,7 @@ const renderComplaints = () => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {allComplaints.map((complaint) => (
+                {rows.map((complaint) => (
                     <TableRow key={complaint.complaintId}>
                         <TableCell>{complaint.complaintId}</TableCell>
                         <TableCell>{complaint.customer}</TableCell>
@@ -203,7 +204,10 @@ const renderComplaints = () => {
     )
 }
 
-export default function ComplaintsTable() {
+export default function ComplaintsTable({complaints = allComplaints}: {complaints?: ComplaintRow[]}) {
+    const byStatus = (status?: string) =>
+        status ? complaints.filter((row) => row.status === status) : complaints;
+
     return (
         <Tabs defaultValue="all-complaints" className="w-full">
             <TabsList className="grid w-full grid-cols-5">
@@ -227,7 +231,7 @@ export default function ComplaintsTable() {
                         <FilterByPriority/>
                     </CardHeader>
                     <CardContent>
-                        {renderComplaints()}
+                        {renderComplaints(byStatus())}
                     </CardContent>
                     <CardFooter>
                         <ComplaintsTablePagination/>
@@ -245,7 +249,7 @@ export default function ComplaintsTable() {
                         <FilterByPriority/>
                     </CardHeader>
                     <CardContent>
-                        {renderComplaints()}
+                        {renderComplaints(byStatus("Unscheduled"))}
                     </CardContent>
                     <CardFooter>
                         <ComplaintsTablePagination/>
@@ -263,7 +267,7 @@ export default function ComplaintsTable() {
                         <FilterByPriority/>
                     </CardHeader>
                     <CardContent>
-                        {renderComplaints()}
+                        {renderComplaints(byStatus("Scheduled"))}
                     </CardContent>
                     <CardFooter>
                         <ComplaintsTablePagination/>
@@ -281,7 +285,7 @@ export default function ComplaintsTable() {
                         <FilterByPriority/>
                     </CardHeader>
                     <CardContent>
-                        {renderComplaints()}
+                        {renderComplaints(byStatus("In progress"))}
                     </CardContent>
                     <CardFooter>
                         <ComplaintsTablePagination/>
@@ -299,7 +303,7 @@ export default function ComplaintsTable() {
                         <FilterByPriority/>
                     </CardHeader>
                     <CardContent>
-                        {renderComplaints()}
+                        {renderComplaints(byStatus("Resolved"))}
                     </CardContent>
                     <CardFooter>
                         <ComplaintsTablePagination/>

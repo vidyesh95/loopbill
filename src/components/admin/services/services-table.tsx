@@ -1,3 +1,5 @@
+"use client";
+
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import FilterByServiceType from "@/components/admin/services/filter-by-service-type";
@@ -5,8 +7,9 @@ import {useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import ServicesTablePagination from "@/components/admin/services/services-table-pagination";
+import type {ServiceRow} from "@/lib/data/types";
 
-export const allServices = [
+const allServices: ServiceRow[] = [
     {
         id: 1,
         customer: 'Amit Sharma',
@@ -160,18 +163,18 @@ const getStatusColor = (status: string) => {
     }
 }
 
-const filterServicesStatus = (staus: string) => {
-    switch (staus) {
+function filterServicesStatus(services: ServiceRow[], status: string) {
+    switch (status) {
         case 'upcoming-services':
-            return allServices.filter((service) => service.status === 'Scheduled' || service.status === 'In progress' || service.status === 'Unscheduled')
+            return services.filter((service) => service.status === 'Scheduled' || service.status === 'In progress' || service.status === 'Unscheduled')
         case 'completed-services':
-            return allServices.filter((service) => service.status === 'Completed')
+            return services.filter((service) => service.status === 'Completed')
         case 'redo-services':
-            return allServices.filter((service) => service.status === 'Redo required')
+            return services.filter((service) => service.status === 'Redo required')
         case 'expired-services':
-            return allServices.filter((service) => service.status === 'Expired')
+            return services.filter((service) => service.status === 'Expired')
         default:
-            return allServices
+            return services
     }
 }
 
@@ -221,7 +224,7 @@ const renderServices = (services: {
     );
 }
 
-export default function ServicesTable() {
+export default function ServicesTable({services = allServices}: {services?: ServiceRow[]}) {
     // State for the 'upcoming-services' tab's service type filter
     const [upcomingSelectedServiceType, setUpcomingSelectedServiceType] = useState<string>("all");
     // Add similar states for other tabs if they need independent filtering
@@ -232,31 +235,31 @@ export default function ServicesTable() {
 
 
     // Logic for 'all-services' tab
-    const allServicesByStatus = filterServicesStatus('all-services');
+    const allServicesByStatus = filterServicesStatus(services, 'all-services');
     const allServicesFilteredByType = allServicesSelectedServiceType === "all"
         ? allServicesByStatus
         : allServicesByStatus.filter(service => service.serviceType === allServicesSelectedServiceType);
 
     // Logic for 'upcoming-services' tab
-    const upcomingServicesByStatus = filterServicesStatus('upcoming-services');
+    const upcomingServicesByStatus = filterServicesStatus(services, 'upcoming-services');
     const upcomingServicesFilteredByType = upcomingSelectedServiceType === "all"
         ? upcomingServicesByStatus
         : upcomingServicesByStatus.filter(service => service.serviceType === upcomingSelectedServiceType);
 
     // Logic for 'completed-services' tab
-    const completedServicesByStatus = filterServicesStatus('completed-services');
+    const completedServicesByStatus = filterServicesStatus(services, 'completed-services');
     const completedServicesFilteredByType = completedSelectedServiceType === "all"
         ? completedServicesByStatus
         : completedServicesByStatus.filter(service => service.serviceType === completedSelectedServiceType);
 
     // Logic for 'redo-services' tab
-    const redoServicesByStatus = filterServicesStatus('redo-services');
+    const redoServicesByStatus = filterServicesStatus(services, 'redo-services');
     const redoServicesFilteredByType = redoSelectedServiceType === "all"
         ? redoServicesByStatus
         : redoServicesByStatus.filter(service => service.serviceType === redoSelectedServiceType);
 
     // Logic for 'expired-services' tab
-    const expiredServicesByStatus = filterServicesStatus('expired-services');
+    const expiredServicesByStatus = filterServicesStatus(services, 'expired-services');
     const expiredServicesFilteredByType = expiredSelectedServiceType === "all"
         ? expiredServicesByStatus
         : expiredServicesByStatus.filter(service => service.serviceType === expiredSelectedServiceType);

@@ -1,7 +1,14 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Activity, CalendarClock, ShieldCheck, TriangleAlert} from "lucide-react";
+import type {DashboardStats} from "@/lib/data/types";
 
-export default function TopStatisticsCards() {
+export default function TopStatisticsCards({stats}: {stats?: DashboardStats}) {
+    const totalPackages = stats?.totalPackages ?? 0;
+    const activeServices = stats?.activeServices ?? 0;
+    const completedThisMonth = stats?.completedThisMonth ?? 0;
+    const expiringSoon = stats?.expiringSoon ?? 0;
+    const pendingComplaints = stats?.pendingComplaints ?? 0;
+    const highPriorityComplaints = stats?.highPriorityComplaints ?? 0;
     return (
         <div className="grid gap-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1">
             <Card className="hover:shadow-md border-l-4 border-l-blue-500 ">
@@ -12,8 +19,8 @@ export default function TopStatisticsCards() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <h1 className="text-2xl font-bold">1,248</h1>
-                    <CardDescription className="text-xs py-2">+20% from last month</CardDescription>
+                    <h1 className="text-2xl font-bold">{totalPackages.toLocaleString("en-IN")}</h1>
+                    <CardDescription className="text-xs py-2">Seeded contracts in the database</CardDescription>
                 </CardContent>
             </Card>
 
@@ -25,8 +32,8 @@ export default function TopStatisticsCards() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <h1 className="text-2xl font-bold">892</h1>
-                    <CardDescription className="text-xs py-2">147 completed this month</CardDescription>
+                    <h1 className="text-2xl font-bold">{activeServices.toLocaleString("en-IN")}</h1>
+                    <CardDescription className="text-xs py-2">{completedThisMonth} completed this month</CardDescription>
                 </CardContent>
             </Card>
 
@@ -38,8 +45,8 @@ export default function TopStatisticsCards() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <h1 className="text-2xl font-bold">68</h1>
-                    <CardDescription className="text-xs py-2">Within next 15 days</CardDescription>
+                    <h1 className="text-2xl font-bold">{expiringSoon.toLocaleString("en-IN")}</h1>
+                    <CardDescription className="text-xs py-2">Marked expiring soon</CardDescription>
                 </CardContent>
             </Card>
 
@@ -51,8 +58,8 @@ export default function TopStatisticsCards() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <h1 className="text-2xl font-bold">23</h1>
-                    <CardDescription className="text-xs py-2">12 require immediate attention</CardDescription>
+                    <h1 className="text-2xl font-bold">{pendingComplaints.toLocaleString("en-IN")}</h1>
+                    <CardDescription className="text-xs py-2">{highPriorityComplaints} require immediate attention</CardDescription>
                 </CardContent>
             </Card>
         </div>

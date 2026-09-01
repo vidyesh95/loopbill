@@ -71,7 +71,7 @@ const ManageUserRoleModal = ({ isOpen, onClose, user }: ManageUserRoleModalProps
 
     const handleSubmit = () => {
         // Here you would typically make an API call to update user permissions
-        console.log("Updating permissions for user:", user.id, permissions);
+        console.log("Updating permissions for user:", user?.id, permissions);
 
         toast.success("Success",{description: "User permissions updated successfully",});
 

@@ -5,19 +5,9 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {Button} from "@/components/ui/button";
 import {Clock4, Eye, Shield, SquarePen, Trash2} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import type {StaffUserRow} from "@/lib/data/types";
 
-interface User {
-    userId: number;
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
-    status: string;
-    lastLogin: string;
-    createdDate: string;
-    department: string;
-    permissions: string[];
-}
+type User = StaffUserRow;
 
 interface RenderUsersProps {
     usersData: User[];
@@ -135,8 +125,8 @@ const renderUsers = ({ usersData, handleUserDetails, handleEditUserDetails, hand
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {users.map((user) => (
-                    <TableRow key={user.userId}>
+                {usersData.map((user) => (
+                    <TableRow key={user.id ?? user.userId}>
                         <TableCell>
                             <div className="flex flex-col">
                                 <span className="font-semibold">{user.userId}</span>
@@ -219,14 +209,16 @@ const renderUsers = ({ usersData, handleUserDetails, handleEditUserDetails, hand
 }
 
 interface UserManagementTableProps {
+    users?: User[];
     handleUserDetails: (user: User) => void;
     handleEditUserDetails: (user: User) => void;
     handleManageUserRole: (user: User) => void; // Renamed from handleManageUserPermissions for consistency
 }
 
-export default function UserManagementTable({handleUserDetails, handleEditUserDetails, handleManageUserRole}: UserManagementTableProps) {
+export default function UserManagementTable({users: usersProp, handleUserDetails, handleEditUserDetails, handleManageUserRole}: UserManagementTableProps) {
+    const rows = usersProp ?? users;
     const renderUsersArgs: RenderUsersProps = {
-        usersData: users,
+        usersData: rows,
         handleUserDetails: handleUserDetails,
         handleEditUserDetails: handleEditUserDetails,
         handleManageUserRole: handleManageUserRole
@@ -266,7 +258,7 @@ export default function UserManagementTable({handleUserDetails, handleEditUserDe
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderUsers(renderUsersArgs)}
+                        {renderUsers({...renderUsersArgs, usersData: rows.filter((row) => row.status === "Active")})}
                     </CardContent>
                     <CardFooter>
                         <UserManagementTablePagination/>
@@ -283,7 +275,7 @@ export default function UserManagementTable({handleUserDetails, handleEditUserDe
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderUsers(renderUsersArgs)}
+                        {renderUsers({...renderUsersArgs, usersData: rows.filter((row) => row.status === "Inactive")})}
                     </CardContent>
                     <CardFooter>
                         <UserManagementTablePagination/>
@@ -300,7 +292,7 @@ export default function UserManagementTable({handleUserDetails, handleEditUserDe
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderUsers(renderUsersArgs)}
+                        {renderUsers({...renderUsersArgs, usersData: rows.filter((row) => row.status === "Pending")})}
                     </CardContent>
                     <CardFooter>
                         <UserManagementTablePagination/>

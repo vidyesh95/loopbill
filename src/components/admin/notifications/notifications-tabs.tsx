@@ -5,8 +5,9 @@ import RecentNotificationsTable from "@/components/admin/notifications/recent-no
 import ScheduledNotificationsTable from "@/components/admin/notifications/scheduled-notifications-table";
 import NotificationTemplates from "@/components/admin/notifications/notification-templates";
 import NotificationAnalytics from "@/components/admin/notifications/notification-analytics";
+import type {NotificationRow, NotificationTemplateRow} from "@/lib/data/types";
 
-const allNotifications = [
+const allNotifications: NotificationRow[] = [
     {
         notificationId: 1,
         subject: 'Service Reminder - Cockroach Treatment',
@@ -129,10 +130,16 @@ const allNotifications = [
     }
 ]
 
-const recentNotifications = allNotifications.filter(notification => notification.status !== 'Scheduled');
-const scheduledNotifications = allNotifications.filter(notification => notification.status !== 'Delivered' && notification.status !== 'Sending');
+export default function NotificationsTabs({
+    notifications = allNotifications,
+    templates,
+}: {
+    notifications?: NotificationRow[];
+    templates?: NotificationTemplateRow[];
+}) {
+    const recentNotifications = notifications.filter(notification => notification.status !== 'Scheduled');
+    const scheduledNotifications = notifications.filter(notification => notification.status !== 'Delivered' && notification.status !== 'Sending');
 
-export default function NotificationsTabs() {
     return (
         <Tabs defaultValue="recent-notifications" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
@@ -188,7 +195,7 @@ export default function NotificationsTabs() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <NotificationTemplates/>
+                        <NotificationTemplates templates={templates}/>
                     </CardContent>
                     <CardFooter>
                         <NotificationsTablePagination/>

@@ -3,7 +3,9 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 
-const agentPerformance = [
+import type {AgentPerformanceRow} from "@/lib/data/types";
+
+const agentPerformance: AgentPerformanceRow[] = [
     {name: 'Agent A', servicesCompleted: 30, efficiency: 95},
     {name: 'Agent B', servicesCompleted: 25, efficiency: 90},
     {name: 'Agent C', servicesCompleted: 28, efficiency: 92},
@@ -12,7 +14,7 @@ const agentPerformance = [
     {name: 'Agent F', servicesCompleted: 37, efficiency: 85},
 ];
 
-export default function AgentPerformance() {
+export default function AgentPerformance({data = agentPerformance}: {data?: AgentPerformanceRow[]}) {
     return (
         <Card>
             <CardHeader>
@@ -21,7 +23,7 @@ export default function AgentPerformance() {
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={350}>
-                    <BarChart data={agentPerformance}>
+                    <BarChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" stroke={"rgba(0, 0, 0, 0.3)"}/>
                         <XAxis dataKey="name" stroke="#000000" fontSize={12} tickLine={false}
                                axisLine={false}/>

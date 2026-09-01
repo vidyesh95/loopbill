@@ -2,7 +2,9 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 
-const pendingComplaints = [
+import type {PendingComplaintRow} from "@/lib/data/types";
+
+const pendingComplaints: PendingComplaintRow[] = [
     {
         id: 1,
         customer: 'Amit Sharma',
@@ -45,7 +47,7 @@ const pendingComplaints = [
     }
 ]
 
-export default function PendingComplaints() {
+export default function PendingComplaints({items = pendingComplaints}: {items?: PendingComplaintRow[]}) {
     return (
         <Card>
             <CardHeader>
@@ -66,7 +68,7 @@ export default function PendingComplaints() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {pendingComplaints.map((complaints) => (
+                        {items.map((complaints) => (
                             <TableRow key={complaints.id}>
                                 <TableCell>{complaints.id}</TableCell>
                                 <TableCell>{complaints.customer}</TableCell>

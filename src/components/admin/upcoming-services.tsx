@@ -2,7 +2,9 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 
-const upcomingServices = [
+import type {UpcomingServiceRow} from "@/lib/data/types";
+
+const upcomingServices: UpcomingServiceRow[] = [
     {
         id: 1,
         customer: 'Amit Sharma',
@@ -33,7 +35,7 @@ const upcomingServices = [
     }
 ]
 
-export default function UpcomingServices() {
+export default function UpcomingServices({services = upcomingServices}: {services?: UpcomingServiceRow[]}) {
     return (
         <Card>
             <CardHeader>
@@ -51,7 +53,7 @@ export default function UpcomingServices() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {upcomingServices.map((service) => (
+                        {services.map((service) => (
                             <TableRow key={service.id}>
                                 <TableCell>{service.customer}</TableCell>
                                 <TableCell>{service.serviceType}</TableCell>

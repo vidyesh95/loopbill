@@ -1,6 +1,6 @@
 import {Input} from "@/components/ui/input";
 import {SidebarTrigger} from "@/components/ui/sidebar";
-import {Bell, Calendar, CalendarClock, CircleUserRound, LogOut, Settings, TriangleAlert} from "lucide-react";
+import {Bell, Calendar, CalendarClock, CircleUserRound, Settings, TriangleAlert} from "lucide-react";
 import Image from "next/image";
 import {
     DropdownMenu,
@@ -10,8 +10,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import LogoutMenuItem from "@/components/auth/logout-menu-item";
 
-export default function TopNavbar() {
+interface TopNavbarProps {
+    name?: string;
+    email?: string;
+}
+
+export default function TopNavbar({name = "Admin", email = ""}: TopNavbarProps) {
     return (
         <header className="flex h-16 items-center bg-white border-b sticky top-0 z-30 px-4 gap-2">
             <SidebarTrigger className="cursor-pointer"/>
@@ -125,8 +131,8 @@ export default function TopNavbar() {
                                 <Image src="/profile_image.png" width={64} height={64} alt="Profile image"/>
                             </div>
                             <div>
-                                <h4 className="max-w-64 text-lg text-primary font-bold truncate">Jean McMaster</h4>
-                                <p className="max-w-64 text-sm text-muted-foreground truncate">admin.pestmaster@gmail.com</p>
+                                <h4 className="max-w-64 text-lg text-primary font-bold truncate">{name}</h4>
+                                <p className="max-w-64 text-sm text-muted-foreground truncate">{email}</p>
                             </div>
                         </div>
                     </DropdownMenuLabel>
@@ -140,10 +146,7 @@ export default function TopNavbar() {
                         Settings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator/>
-                    <DropdownMenuItem>
-                        <LogOut size={24}/>
-                        Logout
-                    </DropdownMenuItem>
+                    <LogoutMenuItem/>
                 </DropdownMenuContent>
             </DropdownMenu>
         </header>

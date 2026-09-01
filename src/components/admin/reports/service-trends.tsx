@@ -3,7 +3,9 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 
-const serviceTrends = [
+import type {ServiceTrendRow} from "@/lib/data/types";
+
+const serviceTrends: ServiceTrendRow[] = [
     {month: 'Nov', services: 420, revenue: 20000},
     {month: 'Dec', services: 450, revenue: 21500},
     {month: 'Jan', services: 200, revenue: 10000},
@@ -18,7 +20,7 @@ const serviceTrends = [
     {month: 'Oct', services: 400, revenue: 19000}
 ];
 
-export default function ServiceTrends() {
+export default function ServiceTrends({data = serviceTrends}: {data?: ServiceTrendRow[]}) {
     return (
         <Card>
             <CardHeader>
@@ -27,7 +29,7 @@ export default function ServiceTrends() {
             </CardHeader>
             <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                    <LineChart data={serviceTrends}>
+                    <LineChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.3)"/>
                         <XAxis dataKey="month" stroke="#000000" fontSize={12} tickLine={false} axisLine={false}/>
                         <YAxis yAxisId="left" stroke="#000000" fontSize={12} tickLine={false} axisLine={false}

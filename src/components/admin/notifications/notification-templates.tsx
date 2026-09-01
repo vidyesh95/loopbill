@@ -47,11 +47,11 @@ const notificationTemplates: NotificationTemplate[] = [
     }
 ]
 
-export default function NotificationTemplates() {
+export default function NotificationTemplates({templates = notificationTemplates}: {templates?: NotificationTemplate[]}) {
     return (
         <section className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"}>
         {
-            notificationTemplates.map(notificationTemplate => (
+            templates.map(notificationTemplate => (
                     <Card key={notificationTemplate.id}>
                         <CardHeader>
                             <CardTitle>{notificationTemplate.cardTitle}</CardTitle>

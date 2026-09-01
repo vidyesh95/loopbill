@@ -4,8 +4,9 @@ import ContractsTablePagination from "@/components/admin/contracts/contracts-tab
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import {Download, Eye} from "lucide-react";
+import type {ContractRow} from "@/lib/data/types";
 
-const allContracts = [
+const allContracts: ContractRow[] = [
     {
         contractId: 1,
         customerName: "Rajesh Kumar",
@@ -73,8 +74,8 @@ const getStatusColor = (status: string) => {
     }
 }
 
-const renderContracts = () => {
-    if (allContracts.length === 0) {
+const renderContracts = (rows: ContractRow[]) => {
+    if (rows.length === 0) {
         return <p>No contracts match the current filters.</p>;
     }
     return (
@@ -92,7 +93,7 @@ const renderContracts = () => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {allContracts.map((contract) => (
+                {rows.map((contract) => (
                     <TableRow key={contract.contractId}>
                         <TableCell>{contract.contractId}</TableCell>
                         <TableCell>
@@ -129,7 +130,12 @@ const renderContracts = () => {
     )
 }
 
-export default function ContractsTable() {
+export default function ContractsTable({contracts = allContracts}: {contracts?: ContractRow[]}) {
+    const all = contracts;
+    const active = contracts.filter((row) => row.status === "Active");
+    const pending = contracts.filter((row) => row.paymentStatus === "Pending" || row.paymentStatus === "Overdue");
+    const expiring = contracts.filter((row) => row.status === "Expiring Soon");
+
     return (
         <Tabs defaultValue="all-contracts" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
@@ -147,7 +153,7 @@ export default function ContractsTable() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderContracts()}
+                        {renderContracts(all)}
                     </CardContent>
                     <CardFooter>
                         <ContractsTablePagination/>
@@ -164,7 +170,7 @@ export default function ContractsTable() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderContracts()}
+                        {renderContracts(active)}
                     </CardContent>
                     <CardFooter>
                         <ContractsTablePagination/>
@@ -181,7 +187,7 @@ export default function ContractsTable() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderContracts()}
+                        {renderContracts(pending)}
                     </CardContent>
                     <CardFooter>
                         <ContractsTablePagination/>
@@ -198,7 +204,7 @@ export default function ContractsTable() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {renderContracts()}
+                        {renderContracts(expiring)}
                     </CardContent>
                     <CardFooter>
                         <ContractsTablePagination/>
