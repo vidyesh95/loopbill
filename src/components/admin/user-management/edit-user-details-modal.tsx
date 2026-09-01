@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -26,28 +26,25 @@ interface EditUserModalProps {
     user: any;
 }
 
-const EditUserDetailsModal = ({ isOpen, onClose, user }: EditUserModalProps) => {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        role: "",
-        department: "",
-        status: ""
-    });
+function getUserFormData(user: EditUserModalProps["user"]) {
+    return {
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        role: user?.role || "",
+        department: user?.department || "",
+        status: user?.status || "",
+    };
+}
 
-    useEffect(() => {
-        if (user) {
-            setFormData({
-                name: user.name || "",
-                email: user.email || "",
-                phone: user.phone || "",
-                role: user.role || "",
-                department: user.department || "",
-                status: user.status || ""
-            });
-        }
-    }, [user]);
+const EditUserDetailsModal = ({ isOpen, onClose, user }: EditUserModalProps) => {
+    const [formData, setFormData] = useState(() => getUserFormData(user));
+    const [currentUser, setCurrentUser] = useState(user);
+
+    if (user !== currentUser) {
+        setCurrentUser(user);
+        setFormData(getUserFormData(user));
+    }
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({

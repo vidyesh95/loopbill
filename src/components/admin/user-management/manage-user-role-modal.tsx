@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -18,44 +18,49 @@ interface ManageUserRoleModalProps {
     user: any;
 }
 
+const availablePermissions = [
+    { id: 'dashboard', name: 'Dashboard Access', description: 'View main dashboard and overview' },
+    { id: 'users', name: 'User Management', description: 'Create, edit, and manage users' },
+    { id: 'customers', name: 'Customer Management', description: 'Manage customer information and accounts' },
+    { id: 'services', name: 'Service Management', description: 'Schedule and manage pest control services' },
+    { id: 'reports', name: 'Reports & Analytics', description: 'Generate and view business reports' },
+    { id: 'settings', name: 'System Settings', description: 'Configure system-wide settings' },
+    { id: 'complaints', name: 'Complaint Handling', description: 'Manage customer complaints and feedback' },
+    { id: 'notifications', name: 'Send Notifications', description: 'Send notifications to customers and staff' },
+    { id: 'contracts', name: 'Contract Management', description: 'Manage customer contracts and agreements' },
+    { id: 'billing', name: 'Billing & Payments', description: 'Handle billing and payment processing' },
+];
+
+function getRolePermissions(role: string | undefined) {
+    const rolePermissions: Record<string, boolean> = {};
+
+    if (role === 'Administrator') {
+        availablePermissions.forEach(perm => {
+            rolePermissions[perm.id] = true;
+        });
+    } else if (role === 'Sales Manager') {
+        ['dashboard', 'customers', 'services', 'reports', 'complaints', 'notifications', 'contracts'].forEach(id => {
+            rolePermissions[id] = true;
+        });
+    } else if (role === 'Agent') {
+        ['dashboard', 'services', 'complaints'].forEach(id => {
+            rolePermissions[id] = true;
+        });
+    }
+
+    return rolePermissions;
+}
+
 const ManageUserRoleModal = ({ isOpen, onClose, user }: ManageUserRoleModalProps) => {
-    const [permissions, setPermissions] = useState<Record<string, boolean>>({});
+    const [permissions, setPermissions] = useState<Record<string, boolean>>(
+        () => getRolePermissions(user?.role)
+    );
+    const [currentUser, setCurrentUser] = useState(user);
 
-    const availablePermissions = [
-        { id: 'dashboard', name: 'Dashboard Access', description: 'View main dashboard and overview' },
-        { id: 'users', name: 'User Management', description: 'Create, edit, and manage users' },
-        { id: 'customers', name: 'Customer Management', description: 'Manage customer information and accounts' },
-        { id: 'services', name: 'Service Management', description: 'Schedule and manage pest control services' },
-        { id: 'reports', name: 'Reports & Analytics', description: 'Generate and view business reports' },
-        { id: 'settings', name: 'System Settings', description: 'Configure system-wide settings' },
-        { id: 'complaints', name: 'Complaint Handling', description: 'Manage customer complaints and feedback' },
-        { id: 'notifications', name: 'Send Notifications', description: 'Send notifications to customers and staff' },
-        { id: 'contracts', name: 'Contract Management', description: 'Manage customer contracts and agreements' },
-        { id: 'billing', name: 'Billing & Payments', description: 'Handle billing and payment processing' },
-    ];
-
-    useEffect(() => {
-        if (user) {
-            // Set initial permissions based on user role
-            const rolePermissions: Record<string, boolean> = {};
-
-            if (user.role === 'Administrator') {
-                availablePermissions.forEach(perm => {
-                    rolePermissions[perm.id] = true;
-                });
-            } else if (user.role === 'Sales Manager') {
-                ['dashboard', 'customers', 'services', 'reports', 'complaints', 'notifications', 'contracts'].forEach(id => {
-                    rolePermissions[id] = true;
-                });
-            } else if (user.role === 'Agent') {
-                ['dashboard', 'services', 'complaints'].forEach(id => {
-                    rolePermissions[id] = true;
-                });
-            }
-
-            setPermissions(rolePermissions);
-        }
-    }, [user]);
+    if (user !== currentUser) {
+        setCurrentUser(user);
+        setPermissions(getRolePermissions(user?.role));
+    }
 
     const handlePermissionChange = (permissionId: string, checked: boolean) => {
         setPermissions(prev => ({
