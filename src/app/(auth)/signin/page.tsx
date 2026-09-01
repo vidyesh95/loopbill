@@ -2,7 +2,7 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} f
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Mail, Phone, Lock} from "lucide-react";
+import {Mail, Lock} from "lucide-react";
 import Link from "next/link";
 import {Checkbox} from "@/components/ui/checkbox";
 import AdvancedOptions from "@/components/auth/signin/advancedOption";
@@ -24,13 +24,11 @@ export default function SignIn() {
                 <CardContent>
                     <form className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1">
-                            <Label htmlFor="email"><Mail className="h-4 w-4"/>Email or<Phone className="h-4 w-4"/>Phone
-                                number</Label>
-                            <Input type="text"
+                            <Label htmlFor="email"><Mail className="h-4 w-4"/>Email</Label>
+                            <Input type="email"
                                    id="email"
-                                   placeholder="Enter your email or phone number"
-                                   pattern="^([^\s@]+@[^\s@]+\.[^\s@]+|\+?\d{10,15})$"
-                                   title="Please enter a valid email or phone number"
+                                   placeholder="Enter your email"
+                                   title="Please enter a valid email"
                                    required/>
                         </div>
                         <div className="flex flex-col gap-1">
