@@ -118,7 +118,7 @@ const getStatusColor = (status: string) => {
     }
 }
 
-const renderUsers = ({ usersData: usersData, handleUserDetails, handleEditUserDetails, handleManageUserRole }: RenderUsersProps) => {
+const renderUsers = ({ usersData, handleUserDetails, handleEditUserDetails, handleManageUserRole }: RenderUsersProps) => {
     if (usersData.length === 0) {
         return <p>No Users match the current filters.</p>;
     }

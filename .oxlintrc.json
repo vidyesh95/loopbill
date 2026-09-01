@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "react", "nextjs", "jsx-a11y", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": [".next/**", "out/**", "build/**", "next-env.d.ts", "node_modules/**"],
+  "rules": {
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-unused-vars": "warn",
+    "typescript/restrict-template-expressions": "warn",
+    "react/exhaustive-deps": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react/incompatible-library": "warn",
+    "unicorn/no-empty-file": "warn",
+    "jsx-a11y/no-autofocus": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/anchor-has-content": "warn",
+    "jsx-a11y/label-has-associated-control": "warn",
+    "jsx-a11y/no-redundant-roles": "off",
+    "jsx-a11y/prefer-tag-over-role": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/components/ui/**"],
+      "rules": {
+        "jsx-a11y/anchor-has-content": "off",
+        "jsx-a11y/prefer-tag-over-role": "off",
+        "jsx-a11y/no-redundant-roles": "off"
+      }
+    }
+  ]
+}
