@@ -82,7 +82,7 @@ const ManageUserRoleModal = ({ isOpen, onClose, user }: ManageUserRoleModalProps
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[700px]">
+            <DialogContent className="sm:max-w-175">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Shield className="h-5 w-5 text-google-blue" />
@@ -101,7 +101,7 @@ const ManageUserRoleModal = ({ isOpen, onClose, user }: ManageUserRoleModalProps
                         </p>
                     </div>
 
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                    <div className="space-y-4 max-h-100 overflow-y-auto">
                         <h4 className="font-medium">Available Permissions</h4>
                         {availablePermissions.map((permission) => (
                             <div key={permission.id} className="flex items-start space-x-3 p-3 border rounded-lg">
