@@ -53,7 +53,7 @@ const EditUserDetailsModal = ({ isOpen, onClose, user }: EditUserModalProps) => 
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Here you would typically make an API call to update the user
