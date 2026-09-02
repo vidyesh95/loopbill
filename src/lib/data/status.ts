@@ -1,16 +1,21 @@
 export const SERVICE_STATUSES = [
-    "Scheduled",
-    "In progress",
-    "Unscheduled",
-    "Completed",
-    "Redo required",
-    "Reschedule required",
-    "Expired",
+  "Scheduled",
+  "In progress",
+  "Unscheduled",
+  "Completed",
+  "Redo required",
+  "Reschedule required",
+  "Expired",
 ] as const;
 
 export const COMPLAINT_STATUSES = ["Unscheduled", "Scheduled", "In progress", "Resolved"] as const;
 export const COMPLAINT_PRIORITIES = ["High", "Normal", "Low"] as const;
-export const COMPLAINT_TYPES = ["Service quality", "Pest reappearance", "Agent behavior", "Late arrival"] as const;
+export const COMPLAINT_TYPES = [
+  "Service quality",
+  "Pest reappearance",
+  "Agent behavior",
+  "Late arrival",
+] as const;
 
 export const CONTRACT_STATUSES = ["Active", "Expiring Soon", "Expired"] as const;
 export const PAYMENT_STATUSES = ["Paid", "Pending", "Overdue"] as const;
@@ -24,39 +29,39 @@ export const NOTIFICATION_STATUSES = ["Delivered", "Sending", "Scheduled"] as co
 export const NOTIFICATION_METHODS = ["Email", "SMS", "WhatsApp", "Push"] as const;
 
 export const ROLE_LABELS = {
-    admin: "Administrator",
-    salesperson: "Sales Manager",
-    agent: "Agent",
+  admin: "Administrator",
+  salesperson: "Sales Manager",
+  agent: "Agent",
 } as const;
 
 export function roleFromLabel(label: string) {
-    if (label === "Administrator") {
-        return "admin";
-    }
-    if (label === "Sales Manager") {
-        return "salesperson";
-    }
-    return "agent";
+  if (label === "Administrator") {
+    return "admin";
+  }
+  if (label === "Sales Manager") {
+    return "salesperson";
+  }
+  return "agent";
 }
 
 export function roleLabel(role: string) {
-    if (role === "admin") {
-        return ROLE_LABELS.admin;
-    }
-    if (role === "salesperson") {
-        return ROLE_LABELS.salesperson;
-    }
-    return ROLE_LABELS.agent;
+  if (role === "admin") {
+    return ROLE_LABELS.admin;
+  }
+  if (role === "salesperson") {
+    return ROLE_LABELS.salesperson;
+  }
+  return ROLE_LABELS.agent;
 }
 
 export function statusLabel(status: string) {
-    if (status === "inactive") {
-        return "Inactive";
-    }
-    if (status === "pending") {
-        return "Pending";
-    }
-    return "Active";
+  if (status === "inactive") {
+    return "Inactive";
+  }
+  if (status === "pending") {
+    return "Pending";
+  }
+  return "Active";
 }
 
 export const DEFAULT_MAX_RESCHEDULES = 2;
