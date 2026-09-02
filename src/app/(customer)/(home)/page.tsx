@@ -7,8 +7,11 @@ import CallToAction from "@/components/customer/home/callToAction";
 import {Locations} from "@/components/customer/home/locations";
 import {Crew} from "@/components/customer/home/crew";
 import {ServiceCatalog} from "@/components/customer/home/service-catalog";
+import {getPublicCompany} from "@/lib/public-site";
 
-export default function Home() {
+export default async function Home() {
+    const company = await getPublicCompany();
+
     return (
         <div className="flex flex-col justify-center">
             <Hero />
@@ -19,8 +22,13 @@ export default function Home() {
                 <CallToAction />
                 <Pricing />
                 <Locations />
-                <About />
-                <Contact />
+                <About title={company.about.title} body={company.about.body} />
+                <Contact
+                    email={company.email}
+                    phones={company.phones}
+                    branches={company.branches}
+                    hours={company.hours}
+                />
             </main>
         </div>
     );

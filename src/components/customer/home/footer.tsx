@@ -31,6 +31,8 @@ export default function Footer() {
                             <li><Link href="/#pricing" className="hover:text-white">Pricing</Link></li>
                             <li><Link href="/#contact" className="hover:text-white">Contact</Link></li>
                             <li><Link href="/terms" className="hover:text-white">Terms & Conditions</Link></li>
+                            <li><Link href="/complaint" className="hover:text-white">Raise a complaint</Link></li>
+                            <li><Link href="/reschedule" className="hover:text-white">Request reschedule</Link></li>
                             <li><Link href="/signin" className="hover:text-white">Staff sign in</Link></li>
                         </ul>
                     </nav>

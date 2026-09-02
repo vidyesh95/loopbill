@@ -6,7 +6,17 @@ import {
     whatsappUrl,
 } from "@/lib/data/services";
 
-const Contact = () => {
+const Contact = ({
+    email = COMPANY_EMAIL,
+    phones = COMPANY_PHONES,
+    branches = BRANCHES,
+    hours = "Monday – Saturday: 9 am – 7 pm",
+}: {
+    email?: string;
+    phones?: ReadonlyArray<{display: string; href: string}>;
+    branches?: ReadonlyArray<{name: string; address: string}>;
+    hours?: string;
+}) => {
     return (
         <section id="contact" className="flex flex-col bg-[oklch(0.965_0.012_95)]">
             <header className="mx-auto max-w-3xl px-4 py-20 text-center">
@@ -23,7 +33,7 @@ const Contact = () => {
                 <article className="space-y-6">
                     <h3 className="text-2xl font-semibold">Branches</h3>
                     <ul className="space-y-4 text-muted-foreground">
-                        {BRANCHES.map((branch) => (
+                        {branches.map((branch) => (
                             <li key={branch.name}>
                                 <strong className="text-foreground">{branch.name} branch</strong>
                                 <br />
@@ -31,9 +41,9 @@ const Contact = () => {
                             </li>
                         ))}
                         <li>
-                            <a href={`mailto:${COMPANY_EMAIL}`}>{COMPANY_EMAIL}</a>
+                            <a href={`mailto:${email}`}>{email}</a>
                         </li>
-                        {COMPANY_PHONES.map((phone) => (
+                        {phones.map((phone) => (
                             <li key={phone.href}>
                                 <a href={phone.href}>{phone.display}</a>
                             </li>
@@ -47,7 +57,7 @@ const Contact = () => {
 
                     <div>
                         <h4 className="mb-2 font-semibold">Office hours</h4>
-                        <p className="text-muted-foreground">Monday – Friday: 8 am – 6 pm</p>
+                        <p className="text-muted-foreground">{hours}</p>
                         <p className="text-muted-foreground">Saturday: 9 am – 2 pm</p>
                         <p className="text-muted-foreground">Sunday: Closed</p>
                     </div>

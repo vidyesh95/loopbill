@@ -1,5 +1,7 @@
+"use client";
 
 import { useState } from "react";
+import {updateStaffPermissions} from "@/lib/actions/staff";
 import {
     Dialog,
     DialogContent,
@@ -69,9 +71,16 @@ const ManageUserRoleModal = ({ isOpen, onClose, user }: ManageUserRoleModalProps
         }));
     };
 
-    const handleSubmit = () => {
-        // Here you would typically make an API call to update user permissions
-        console.log("Updating permissions for user:", user?.id, permissions);
+    const handleSubmit = async () => {
+        const result = await updateStaffPermissions({
+            id: String(user?.id ?? ""),
+            role: user?.role,
+            permissions: Object.entries(permissions).filter(([, checked]) => checked).map(([id]) => id),
+        });
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
 
         toast.success("Success",{description: "User permissions updated successfully",});
 

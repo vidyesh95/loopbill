@@ -8,17 +8,21 @@ import {
     getServicesAtRisk,
     getUpcomingServices,
 } from "@/lib/db/queries";
+import {getLookups, getRecentActivities} from "@/lib/db/queries-staff";
 
 export default async function Admin() {
-    const [stats, upcoming, atRisk, pending, agentPerformance, complaintStatus, serviceTrends] = await Promise.all([
-        getDashboardStats(),
-        getUpcomingServices(),
-        getServicesAtRisk(),
-        getPendingComplaints(),
-        getAgentPerformance(),
-        getComplaintStatusBreakdown(),
-        getServiceTrends(),
-    ]);
+    const [stats, upcoming, atRisk, pending, agentPerformance, complaintStatus, serviceTrends, activities, lookups] =
+        await Promise.all([
+            getDashboardStats(),
+            getUpcomingServices(),
+            getServicesAtRisk(),
+            getPendingComplaints(),
+            getAgentPerformance(),
+            getComplaintStatusBreakdown(),
+            getServiceTrends(),
+            getRecentActivities(),
+            getLookups(),
+        ]);
 
     return (
         <AdminDashboardClient
@@ -29,6 +33,9 @@ export default async function Admin() {
             agentPerformance={agentPerformance}
             complaintStatus={complaintStatus}
             serviceTrends={serviceTrends}
+            activities={activities}
+            customers={lookups.customers}
+            agents={lookups.agents}
         />
     );
 }

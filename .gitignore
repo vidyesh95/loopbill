@@ -49,3 +49,10 @@ yarn-error.log*
 next-env.d.ts
 
 .idea
+
+# local service proof uploads (keep the sample)
+/public/uploads/proof/*
+!/public/uploads/proof/sample-1.svg
+
+# local test credentials
+/docs/test-logins.md

@@ -1,7 +1,8 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import {notFound} from "next/navigation";
-import {getServiceBySlug, SERVICES} from "@/lib/data/services";
+import {SERVICES} from "@/lib/data/services";
+import {getPublicServiceBySlug, getPublishedServices} from "@/lib/public-site";
 import {isPricedServiceSlug} from "@/lib/data/pricing";
 import {QuoteForm} from "@/components/customer/quote-form";
 import {QuoteDialog} from "@/components/customer/quote-dialog";
@@ -11,13 +12,14 @@ type ServicePageProps = {
     params: Promise<{slug: string}>;
 };
 
-export function generateStaticParams() {
-    return SERVICES.map((service) => ({slug: service.slug}));
+export async function generateStaticParams() {
+    const services = await getPublishedServices();
+    return (services.length ? services : SERVICES).map((service) => ({slug: service.slug}));
 }
 
 export async function generateMetadata({params}: ServicePageProps): Promise<Metadata> {
     const {slug} = await params;
-    const service = getServiceBySlug(slug);
+    const service = await getPublicServiceBySlug(slug);
     if (!service) {
         return {title: "Service | Urban Pest Master"};
     }
@@ -29,7 +31,7 @@ export async function generateMetadata({params}: ServicePageProps): Promise<Meta
 
 export default async function ServicePage({params}: ServicePageProps) {
     const {slug} = await params;
-    const service = getServiceBySlug(slug);
+    const service = await getPublicServiceBySlug(slug);
     if (!service) {
         notFound();
     }

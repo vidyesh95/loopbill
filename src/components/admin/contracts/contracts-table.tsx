@@ -65,7 +65,7 @@ const getStatusColor = (status: string) => {
     switch (status) {
         case 'Active':
             return 'text-green-600 border-green-400 bg-green-100'
-        case 'Expiring soon':
+        case 'Expiring Soon':
             return 'text-yellow-600 border-yellow-400 bg-yellow-100'
         case 'Expired':
             return 'text-red-600 border-red-400 bg-red-100'

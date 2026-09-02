@@ -30,7 +30,7 @@ const CalendarView = ({isOpen, onClose, services}: CalendarViewProps) => {
         switch (status) {
             case "Completed":
                 return "bg-green-100 text-green-700";
-            case "In Progress":
+            case "In progress":
                 return "bg-blue-100 text-blue-700";
             case "Scheduled":
                 return "bg-yellow-100 text-yellow-700";
@@ -141,7 +141,7 @@ const CalendarView = ({isOpen, onClose, services}: CalendarViewProps) => {
                                 </div>
                                 <div className="p-2 bg-blue-50 rounded">
                                     <p className="font-medium text-blue-700">
-                                        {services.filter(s => s.status === "Scheduled" || s.status === "In Progress").length}
+                                        {services.filter(s => s.status === "Scheduled" || s.status === "In progress").length}
                                     </p>
                                     <p className="text-blue-600">Upcoming</p>
                                 </div>

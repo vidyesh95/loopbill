@@ -3,7 +3,7 @@
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Bell, Plus} from "lucide-react";
-import SendNewNotificationModal from "@/components/admin/notifications/send-new-notification-modal";
+import {NotificationDialog} from "@/components/staff/staff-forms";
 import NotificationsTabs from "@/components/admin/notifications/notifications-tabs";
 import type {NotificationRow, NotificationTemplateRow} from "@/lib/data/types";
 
@@ -38,9 +38,9 @@ export default function NotificationsClient({
             </div>
             <NotificationsTabs notifications={notifications} templates={templates}/>
 
-            <SendNewNotificationModal
-                isOpen={isSendNewNotificationOpen}
-                onClose={() => setIsSendNewNotificationOpen(false)}
+            <NotificationDialog
+                open={isSendNewNotificationOpen}
+                onOpenChange={setIsSendNewNotificationOpen}
             />
         </main>
     );

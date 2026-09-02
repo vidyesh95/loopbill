@@ -1,5 +1,7 @@
+"use client";
 
 import { useState } from "react";
+import {updateStaffUser} from "@/lib/actions/staff";
 import {
     Dialog,
     DialogContent,
@@ -53,11 +55,21 @@ const EditUserDetailsModal = ({ isOpen, onClose, user }: EditUserModalProps) => 
         }));
     };
 
-    const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Here you would typically make an API call to update the user
-        console.log("Updating user:", user?.id, formData);
+        const result = await updateStaffUser({
+            id: String(user?.id ?? ""),
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            department: formData.department,
+            status: formData.status.toLowerCase() as "active" | "inactive" | "pending",
+        });
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
 
         toast.success("Success",{description: "User updated successfully"});
 

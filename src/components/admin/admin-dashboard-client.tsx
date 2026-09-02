@@ -11,7 +11,8 @@ import PendingComplaints from "@/components/admin/pending-complaints";
 import AgentPerformance from "@/components/admin/reports/agent-performance";
 import ComplaintStatusBreakdown from "@/components/admin/reports/complaint-status-breakdown";
 import ServiceTrends from "@/components/admin/reports/service-trends";
-import ScheduleServiceModal from "@/components/admin/schedule-service-modal";
+import {ScheduleServiceDialog} from "@/components/staff/staff-forms";
+import type {ActivityItem} from "@/components/admin/recent-activities";
 import type {
     AgentPerformanceRow,
     ComplaintStatusRow,
@@ -30,6 +31,9 @@ interface AdminDashboardClientProps {
     agentPerformance: AgentPerformanceRow[];
     complaintStatus: ComplaintStatusRow[];
     serviceTrends: ServiceTrendRow[];
+    activities?: ActivityItem[];
+    customers?: Array<{id: number; name: string}>;
+    agents?: Array<{id: string; name: string}>;
 }
 
 export default function AdminDashboardClient({
@@ -40,6 +44,9 @@ export default function AdminDashboardClient({
     agentPerformance,
     complaintStatus,
     serviceTrends,
+    activities,
+    customers = [],
+    agents = [],
 }: AdminDashboardClientProps) {
     const [showScheduleModal, setShowScheduleModal] = useState(false);
 
@@ -65,14 +72,20 @@ export default function AdminDashboardClient({
             <TopStatisticsCards stats={stats}/>
             <hr/>
             <UpcomingServices services={upcoming}/>
-            <RecentActivities/>
+            <RecentActivities items={activities}/>
             <ServicesAtRisk items={atRisk}/>
             <PendingComplaints items={pending}/>
             <AgentPerformance data={agentPerformance}/>
             <ComplaintStatusBreakdown data={complaintStatus}/>
             <ServiceTrends data={serviceTrends}/>
 
-            <ScheduleServiceModal isOpen={showScheduleModal} onClose={() => setShowScheduleModal(false)}/>
+            <ScheduleServiceDialog
+                open={showScheduleModal}
+                onOpenChange={setShowScheduleModal}
+                customers={customers}
+                agents={agents}
+                allowOverride
+            />
         </main>
     );
 }

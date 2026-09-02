@@ -1,4 +1,7 @@
+"use client";
+
 import {useState} from "react";
+import {createStaffUser} from "@/lib/actions/staff";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -30,7 +33,7 @@ const AddNewUserModal = ({isOpen, onClose}: AddUserModalProps) => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
@@ -38,8 +41,18 @@ const AddNewUserModal = ({isOpen, onClose}: AddUserModalProps) => {
             return
         }
 
-        // Here you would typically make an API call to create the user
-        console.log("Creating user:", formData);
+        const result = await createStaffUser({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            role: formData.role,
+            department: formData.department,
+            password: formData.password,
+        });
+        if (!result.ok) {
+            toast.error(result.error);
+            return;
+        }
 
         toast.success("Success", {description: "User created successfully"})
 

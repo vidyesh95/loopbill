@@ -108,6 +108,7 @@ export const customer = sqliteTable("customer", {
     name: text("name").notNull(),
     phone: text("phone"),
     email: text("email"),
+    salespersonId: text("salesperson_id").references(() => user.id, {onDelete: "set null"}),
 });
 
 export const location = sqliteTable("location", {
@@ -117,6 +118,9 @@ export const location = sqliteTable("location", {
         .references(() => customer.id, {onDelete: "cascade"}),
     label: text("label").notNull(),
     address: text("address"),
+    building: text("building"),
+    wing: text("wing"),
+    flatNo: text("flat_no"),
 });
 
 export const contract = sqliteTable("contract", {
@@ -126,6 +130,7 @@ export const contract = sqliteTable("contract", {
         .references(() => customer.id, {onDelete: "cascade"}),
     locationId: integer("location_id").references(() => location.id, {onDelete: "set null"}),
     packageId: integer("package_id").references(() => packageCatalog.id, {onDelete: "set null"}),
+    salespersonId: text("salesperson_id").references(() => user.id, {onDelete: "set null"}),
     serviceType: text("service_type").notNull(),
     contractValue: integer("contract_value").notNull(),
     paymentStatus: text("payment_status").notNull(),
@@ -133,6 +138,9 @@ export const contract = sqliteTable("contract", {
     nextPayment: text("next_payment"),
     contractDate: text("contract_date").notNull(),
     expiryDate: text("expiry_date").notNull(),
+    purchasedAt: integer("purchased_at", {mode: "timestamp_ms"}),
+    locked: integer("locked", {mode: "boolean"}).notNull().default(false),
+    rescheduleFlags: integer("reschedule_flags").notNull().default(0),
     status: text("status").notNull(),
 });
 
@@ -149,6 +157,13 @@ export const service = sqliteTable("service", {
     agentId: text("agent_id").references(() => user.id, {onDelete: "set null"}),
     status: text("status").notNull(),
     amount: integer("amount").notNull().default(0),
+    serviceNumber: integer("service_number").notNull().default(1),
+    notes: text("notes"),
+    completionNotes: text("completion_notes"),
+    completedAt: integer("completed_at", {mode: "timestamp_ms"}),
+    rescheduleCount: integer("reschedule_count").notNull().default(0),
+    absenceReportedAt: integer("absence_reported_at", {mode: "timestamp_ms"}),
+    redoOfServiceId: integer("redo_of_service_id"),
 });
 
 export const complaint = sqliteTable("complaint", {
@@ -165,6 +180,10 @@ export const complaint = sqliteTable("complaint", {
     date: text("date").notNull(),
     issue: text("issue"),
     action: text("action"),
+    raisedAt: integer("raised_at", {mode: "timestamp_ms"}),
+    visibleToAdminAt: integer("visible_to_admin_at", {mode: "timestamp_ms"}),
+    attendedAt: integer("attended_at", {mode: "timestamp_ms"}),
+    redoServiceId: integer("redo_service_id"),
 });
 
 export const notificationTemplate = sqliteTable("notification_template", {
@@ -197,4 +216,55 @@ export const lead = sqliteTable("lead", {
     source: text("source").notNull(),
     status: text("status").notNull().default("new"),
     createdAt: integer("created_at", {mode: "timestamp_ms"}).notNull(),
+});
+
+export const serviceProof = sqliteTable("service_proof", {
+    id: integer("id").primaryKey({autoIncrement: true}),
+    serviceId: integer("service_id")
+        .notNull()
+        .references(() => service.id, {onDelete: "cascade"}),
+    url: text("url").notNull(),
+    createdAt: integer("created_at", {mode: "timestamp_ms"}).notNull(),
+});
+
+export const appSetting = sqliteTable("app_setting", {
+    key: text("key").primaryKey(),
+    value: text("value").notNull(),
+});
+
+export const rescheduleRequest = sqliteTable("reschedule_request", {
+    id: integer("id").primaryKey({autoIncrement: true}),
+    serviceId: integer("service_id").references(() => service.id, {onDelete: "set null"}),
+    customerId: integer("customer_id").references(() => customer.id, {onDelete: "set null"}),
+    phone: text("phone"),
+    requestedDate: text("requested_date"),
+    reason: text("reason"),
+    status: text("status").notNull().default("pending"),
+    source: text("source").notNull(),
+    createdAt: integer("created_at", {mode: "timestamp_ms"}).notNull(),
+});
+
+export const siteService = sqliteTable("site_service", {
+    id: integer("id").primaryKey({autoIncrement: true}),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    category: text("category").notNull(),
+    summary: text("summary").notNull(),
+    details: text("details").notNull(),
+    sort: integer("sort").notNull().default(0),
+    published: integer("published", {mode: "boolean"}).notNull().default(true),
+});
+
+export const sitePricing = sqliteTable("site_pricing", {
+    id: integer("id").primaryKey({autoIncrement: true}),
+    slug: text("slug").notNull().unique(),
+    label: text("label").notNull(),
+    residentialBase: integer("residential_base").notNull(),
+    commercialPerSqft: integer("commercial_per_sqft").notNull(),
+    multipliers: text("multipliers"),
+});
+
+export const siteContent = sqliteTable("site_content", {
+    key: text("key").primaryKey(),
+    value: text("value").notNull(),
 });

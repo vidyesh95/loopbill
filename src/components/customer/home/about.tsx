@@ -1,4 +1,10 @@
-export default function About() {
+export default function About({
+    title = "Urban Pest Master Private Limited",
+    body = "Pest control for homes, societies, and commercial kitchens from Mumbai to Palghar, by train or bus. Office in Kandivali.",
+}: {
+    title?: string;
+    body?: string;
+}) {
     return (
         <section id="about">
             <header className="bg-[oklch(0.99_0.008_95)] py-20 text-center">
@@ -7,11 +13,10 @@ export default function About() {
                         About us
                     </p>
                     <h2 className="font-display mt-3 text-4xl text-foreground">
-                        Urban Pest Master Private Limited
+                        {title}
                     </h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Pest control for homes, societies, and commercial kitchens from Mumbai to
-                        Palghar, by train or bus. Office in Kandivali.
+                        {body}
                     </p>
                 </div>
             </header>

@@ -1,6 +1,7 @@
 import {config} from "dotenv";
 import {createLocalAccountIssuer} from "better-auth/db";
 import {hashPassword} from "better-auth/crypto";
+import {eq} from "drizzle-orm";
 
 config({path: ".env.local"});
 config({path: ".env", override: true});
@@ -8,6 +9,7 @@ config({path: ".env", override: true});
 import {db} from "./index";
 import {
     account,
+    appSetting,
     branch,
     company,
     complaint,
@@ -19,13 +21,21 @@ import {
     notificationTemplate,
     packageCatalog,
     permission,
+    rescheduleRequest,
     service,
+    serviceProof,
     serviceType,
     session,
+    siteContent,
+    sitePricing,
+    siteService,
     user,
     userPermission,
     verification,
 } from "./schema";
+import {COMPANY_STATS, SERVICE_STATIONS, SERVICES} from "../data/services";
+import {PRICED_SERVICES} from "../data/pricing";
+import {addDays as addLifecycleDays, complaintAdminVisibleAt} from "../lifecycle";
 
 const DEV_PASSWORD = "Password123!";
 const RNG_SEED = 20260301;
@@ -339,6 +349,8 @@ const templates = [
 ];
 
 async function reset() {
+    await db.delete(serviceProof);
+    await db.delete(rescheduleRequest);
     await db.delete(notification);
     await db.delete(notificationTemplate);
     await db.delete(complaint);
@@ -347,6 +359,10 @@ async function reset() {
     await db.delete(location);
     await db.delete(customer);
     await db.delete(lead);
+    await db.delete(siteService);
+    await db.delete(sitePricing);
+    await db.delete(siteContent);
+    await db.delete(appSetting);
     await db.delete(userPermission);
     await db.delete(session);
     await db.delete(account);
@@ -357,6 +373,24 @@ async function reset() {
     await db.delete(packageCatalog);
     await db.delete(branch);
     await db.delete(company);
+}
+
+function parseLocationParts(label: string) {
+    const buildingMatch = label.match(/Building\s+([^,]+)/i);
+    const flatMatch = label.match(/Flat\s+([^,]+)/i);
+    return {
+        building: buildingMatch?.[1]?.trim(),
+        wing: undefined as string | undefined,
+        flatNo: flatMatch?.[1]?.trim(),
+    };
+}
+
+function parseContractDate(value: string) {
+    const match = value.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    if (match) {
+        return new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+    }
+    return parseDisplayDate(value);
 }
 
 async function seed() {
@@ -446,11 +480,13 @@ async function seed() {
     });
 
     const allCustomers = [...existingCustomers, ...extraCustomers];
+    const salesIds = existingStaff.filter((item) => item.role === "salesperson" && item.status === "active").map((item) => staffId(item.name));
     await db.insert(customer).values(
-        allCustomers.map((item) => ({
+        allCustomers.map((item, index) => ({
             name: item.name,
             phone: item.phone,
             email: item.email,
+            salespersonId: salesIds[index % salesIds.length],
         })),
     );
 
@@ -463,10 +499,14 @@ async function seed() {
             if (!row) {
                 throw new Error(`Missing customer ${item.name}`);
             }
+            const parts = parseLocationParts(item.label);
             return {
                 customerId: row.id,
                 label: item.label,
                 address: item.address,
+                building: parts.building,
+                wing: parts.wing,
+                flatNo: parts.flatNo,
             };
         }),
     );
@@ -486,6 +526,7 @@ async function seed() {
             customerId: customerRow.id,
             locationId: locationByCustomerId.get(customerRow.id)?.id,
             packageId: packageByName.get(item.packageName),
+            salespersonId: customerRow.salespersonId,
             serviceType: item.serviceType,
             contractValue: item.value,
             paymentStatus: item.paymentStatus,
@@ -493,6 +534,8 @@ async function seed() {
             nextPayment: item.nextPayment,
             contractDate: item.contractDate,
             expiryDate: item.expiryDate,
+            purchasedAt: parseContractDate(item.contractDate),
+            locked: item.status === "Expired",
             status: item.status,
         });
     }
@@ -516,6 +559,7 @@ async function seed() {
             customerId: customerRow.id,
             locationId: locationRow?.id,
             packageId: packageByName.get(pick([...packageNames])),
+            salespersonId: customerRow.salespersonId,
             serviceType: serviceTypeName,
             contractValue: 6000 + Math.floor(random() * 24000),
             paymentStatus: pick([...paymentStatuses]),
@@ -523,6 +567,8 @@ async function seed() {
             nextPayment: formatDdMmYyyy(addDays(start, 30)),
             contractDate: formatDdMmYyyy(start),
             expiryDate: formatDdMmYyyy(expiry),
+            purchasedAt: start,
+            locked: status === "Expired",
             status,
         });
     }
@@ -535,6 +581,7 @@ async function seed() {
         if (!customerRow) {
             throw new Error(`Missing service customer ${item.customer}`);
         }
+        const scheduled = parseDisplayDate(item.date);
         await db.insert(service).values({
             id: item.id,
             contractId: contractByCustomerId.get(customerRow.id)?.id,
@@ -542,10 +589,13 @@ async function seed() {
             locationId: locationByCustomerId.get(customerRow.id)?.id,
             serviceType: item.serviceType,
             date: item.date,
-            scheduledAt: parseDisplayDate(item.date),
+            scheduledAt: scheduled,
             agentId: item.agent === "Unassigned" ? null : staffId(item.agent),
             status: item.status,
             amount: parseAmount(item.amount),
+            serviceNumber: ((item.id - 1) % 3) + 1,
+            completedAt: item.status === "Completed" ? scheduled : null,
+            notes: item.status === "Reschedule required" ? "Customer not present" : null,
         });
     }
 
@@ -575,6 +625,8 @@ async function seed() {
                 agentId: status === "Unscheduled" ? null : pick(agentIds),
                 status,
                 amount: status === "Unscheduled" || status === "Expired" ? 0 : 1500 + Math.floor(random() * 3500),
+                serviceNumber: visit + 1,
+                completedAt: status === "Completed" ? scheduled : null,
             });
         }
     }
@@ -584,6 +636,7 @@ async function seed() {
         if (!customerRow) {
             throw new Error(`Missing complaint customer ${item.customer}`);
         }
+        const raisedAt = parseDisplayDate(item.date);
         await db.insert(complaint).values({
             id: item.id,
             serviceId: item.serviceId,
@@ -593,7 +646,10 @@ async function seed() {
             status: item.status,
             date: item.date,
             issue: item.issue,
-            action: item.action,
+            action: item.status === "Resolved" ? item.action : "Assign redo",
+            raisedAt,
+            visibleToAdminAt: complaintAdminVisibleAt(addLifecycleDays(raisedAt, -3)),
+            attendedAt: item.status === "Resolved" || item.status === "In progress" ? raisedAt : null,
         });
     }
 
@@ -605,6 +661,7 @@ async function seed() {
     let complaintId = existingComplaints.length;
     for (const serviceRow of extraServicePool.slice(0, 8)) {
         complaintId += 1;
+        const raisedAt = serviceRow.scheduledAt ?? parseDisplayDate(serviceRow.date);
         await db.insert(complaint).values({
             id: complaintId,
             serviceId: serviceRow.id,
@@ -620,6 +677,8 @@ async function seed() {
                 "Technician arrived late",
             ]),
             action: "Update status",
+            raisedAt,
+            visibleToAdminAt: complaintAdminVisibleAt(addLifecycleDays(raisedAt, -3)),
         });
     }
 
@@ -654,6 +713,80 @@ async function seed() {
     }
 
     await db.insert(notificationTemplate).values(templates);
+
+    await db.insert(appSetting).values([
+        {key: "remindersEnabled", value: "true"},
+        {key: "maxReschedules", value: "2"},
+        {key: "officeHours", value: "Mon–Sat 9:00 AM – 7:00 PM"},
+        {key: "whatsappNumber", value: "918600139094"},
+    ]);
+
+    await db.insert(siteService).values(
+        SERVICES.map((item, index) => ({
+            slug: item.slug,
+            title: item.title,
+            category: item.category,
+            summary: item.summary,
+            details: JSON.stringify(item.details),
+            sort: index,
+            published: true,
+        })),
+    );
+    await db.insert(sitePricing).values(
+        PRICED_SERVICES.map((item) => ({
+            slug: item.slug,
+            label: item.label,
+            residentialBase: item.residentialBase,
+            commercialPerSqft: item.commercialPerSqft,
+        })),
+    );
+    await db.insert(siteContent).values([
+        {
+            key: "hero",
+            value: JSON.stringify({
+                eyebrow: "Mumbai to Palghar · by train or bus",
+                title: "Pest-free homes and businesses, on your terms.",
+                body: "Residential rates by BHK. Commercial rates by square feet. The same treatments booked on a call or WhatsApp.",
+            }),
+        },
+        {
+            key: "about",
+            value: JSON.stringify({
+                title: "Urban Pest Master Private Limited",
+                body: "Pest control for homes, societies, and commercial kitchens from Mumbai to Palghar, by train or bus. Office in Kandivali.",
+            }),
+        },
+        {
+            key: "faq",
+            value: JSON.stringify([
+                {
+                    question: "How is the price calculated?",
+                    answer: "Homes are priced by pest type, BHK size, and duration. Commercial sites are priced by pest type, square feet, and duration.",
+                },
+                {
+                    question: "Do you re-treat if pests come back?",
+                    answer: "If pests return after a scheduled treatment, tell us in the same calendar month and we will arrange a re-service.",
+                },
+            ]),
+        },
+        {
+            key: "terms",
+            value: "Urban Pest Master Private Limited provides pest control and related services in Mumbai and surrounding areas. By requesting a quote or booking a visit, you agree to these terms.",
+        },
+        {key: "stats", value: JSON.stringify(COMPANY_STATS)},
+        {key: "stations", value: JSON.stringify(SERVICE_STATIONS)},
+        {key: "hours", value: "Mon–Sat 9:00 AM – 7:00 PM"},
+        {key: "whatsappNumber", value: "918600139094"},
+    ]);
+
+    const completedJobs = await db.select().from(service).where(eq(service.status, "Completed"));
+    if (completedJobs[0]) {
+        await db.insert(serviceProof).values({
+            serviceId: completedJobs[0].id,
+            url: "/uploads/proof/sample-1.svg",
+            createdAt: now,
+        });
+    }
 
     const admin = existingStaff.find((staff) => staff.role === "admin");
     console.log(`Seeded ${existingStaff.length} staff (password: ${DEV_PASSWORD})`);

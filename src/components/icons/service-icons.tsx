@@ -64,17 +64,18 @@ export function CockroachIcon(props: ServiceIconProps) {
 export function MosquitoIcon(props: ServiceIconProps) {
     return (
         <IconBase {...props}>
+            <ellipse cx="14.2" cy="8.3" rx="6.3" ry="2.05" transform="rotate(-32 14.2 8.3)" />
+            <ellipse cx="15.5" cy="6.7" rx="5.1" ry="1.45" transform="rotate(-40 15.5 6.7)" />
+            <ellipse cx="13.9" cy="11.7" rx="5.5" ry="1.5" transform="rotate(-28 13.9 11.7)" />
+            <circle cx="8.55" cy="13.45" r="2" />
+            <circle cx="6.15" cy="15.2" r="1.15" />
             <path
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.15"
+                strokeWidth="1.2"
                 strokeLinecap="round"
-                d="M2.2 13.35 7.15 11.45M10.15 13.35C8.1 16.4 6.35 20.4 5.45 22.1M11.85 13.55C11.35 17.1 11.7 20.85 12.25 22.25M13.85 13.25C15.7 16.9 18.15 20.55 19.55 22.05"
+                d="M5.2 16.15 2.2 21.1M5.45 14.35 3.35 12.05M6.55 14.15 5.4 11.45M7.55 14.85 3.25 18.7M8.75 15.05 6.35 21.2M10.15 12.55 14.55 3.35M11.35 12.15 18.25 4.15"
             />
-            <ellipse cx="13.4" cy="8.15" rx="6.1" ry="2.35" transform="rotate(-18 13.4 8.15)" />
-            <ellipse cx="14.55" cy="6.55" rx="5.2" ry="1.85" transform="rotate(-28 14.55 6.55)" />
-            <ellipse cx="14.2" cy="12.15" rx="5.4" ry="1.85" transform="rotate(-8 14.2 12.15)" />
-            <circle cx="8.05" cy="11.15" r="1.5" />
         </IconBase>
     );
 }

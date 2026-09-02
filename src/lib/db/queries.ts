@@ -250,33 +250,9 @@ export async function getUpcomingServices(limit = 6): Promise<UpcomingServiceRow
 }
 
 export async function getServicesAtRisk(limit = 6): Promise<ServiceAtRiskRow[]> {
-    const rows = await db
-        .select({
-            id: contract.id,
-            customer: customer.name,
-            packageName: packageCatalog.name,
-            status: contract.status,
-            expiryDate: contract.expiryDate,
-        })
-        .from(contract)
-        .innerJoin(customer, eq(contract.customerId, customer.id))
-        .leftJoin(packageCatalog, eq(contract.packageId, packageCatalog.id))
-        .where(inArray(contract.status, ["Expiring Soon", "Active"]))
-        .orderBy(desc(contract.id))
-        .limit(limit);
-
-    return rows.map((row, index) => {
-        const critical = row.status === "Expiring Soon";
-        return {
-            id: row.id,
-            customer: row.customer,
-            package: row.packageName ?? "Basic Pest Control",
-            nextService: index % 2 === 0 ? "2nd Service" : "3rd Service",
-            daysLeft: critical ? "7 days" : "18 days",
-            status: critical ? "Critical" : "Warning",
-            action: critical ? "Contact" : "Schedule",
-        };
-    });
+    const {getContractsAtRisk} = await import("@/lib/db/queries-staff");
+    const rows = await getContractsAtRisk();
+    return rows.slice(0, limit);
 }
 
 export async function getPendingComplaints(limit = 6): Promise<PendingComplaintRow[]> {
