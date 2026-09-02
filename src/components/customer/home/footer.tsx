@@ -17,8 +17,8 @@ export default function Footer() {
                     <div>
                         <h3 className="font-display text-2xl">Urban Pest Master</h3>
                         <p className="mt-3 text-sm text-[oklch(0.84_0.02_95)]">
-                            Pest control for Mumbai homes and businesses — from Kandivali and Virar,
-                            with WhatsApp booking and published residential and commercial rates.
+                            Pest control from Mumbai to Palghar, by train or bus, with WhatsApp
+                            booking and published residential and commercial rates.
                         </p>
                     </div>
 

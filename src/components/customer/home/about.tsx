@@ -10,8 +10,8 @@ export default function About() {
                         Urban Pest Master Private Limited
                     </h2>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Pest control for urban Mumbai — homes, societies, and commercial kitchens —
-                        run from Kandivali and Virar.
+                        Pest control for homes, societies, and commercial kitchens from Mumbai to
+                        Palghar, by train or bus. Office in Kandivali.
                     </p>
                 </div>
             </header>

@@ -36,6 +36,54 @@ export const COMPANY_STATS = [
     {value: "3+", label: "Locations"},
 ] as const;
 
+export const SERVICE_STATIONS = [
+    {
+        region: "South Mumbai",
+        stations: [
+            "Churchgate",
+            "Marine Lines",
+            "Charni Road",
+            "Grant Road",
+            "Mumbai Central",
+            "Mahalaxmi",
+            "Lower Parel",
+            "Prabhadevi",
+            "Dadar",
+            "Matunga Road",
+            "Mahim",
+        ],
+    },
+    {
+        region: "Western suburbs",
+        stations: [
+            "Bandra",
+            "Khar Road",
+            "Santacruz",
+            "Vile Parle",
+            "Andheri",
+            "Jogeshwari",
+            "Ram Mandir",
+            "Goregaon",
+            "Malad",
+            "Kandivali",
+            "Borivali",
+            "Dahisar",
+        ],
+    },
+    {
+        region: "Mira–Bhayandar",
+        stations: ["Mira Road", "Bhayandar", "Naigaon"],
+    },
+    {
+        region: "Vasai–Virar",
+        stations: ["Vasai Road", "Nala Sopara", "Virar"],
+    },
+    {
+        region: "Palghar",
+        stations: ["Vaitarna", "Saphale", "Kelve Road", "Palghar"],
+    },
+] as const;
+
 export function whatsappUrl(message?: string) {
     if (!message?.trim()) {
         return WHATSAPP_URL;

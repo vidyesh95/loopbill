@@ -31,7 +31,7 @@ export default function Features() {
             </header>
 
             <ul className="mx-auto grid max-w-6xl gap-4 px-4 md:grid-cols-3">
-                {reasons.map(({title, description}) => (
+                {reasons.map(({ title, description }) => (
                     <li
                         key={title}
                         className="rounded-2xl border border-[oklch(0.86_0.015_95)] bg-[oklch(0.99_0.008_95)] p-6"

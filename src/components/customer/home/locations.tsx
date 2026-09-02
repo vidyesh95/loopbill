@@ -1,5 +1,5 @@
 import {EnquiryForm} from "@/components/customer/enquiry-form";
-import {BRANCHES, COMPANY_STATS} from "@/lib/data/services";
+import {BRANCHES, COMPANY_STATS, SERVICE_STATIONS} from "@/lib/data/services";
 
 export function Locations() {
     return (
@@ -7,11 +7,15 @@ export function Locations() {
             <div className="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-2 lg:items-start">
                 <div>
                     <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
-                        We are located at
+                        Service area
                     </p>
                     <h2 className="font-display mt-3 text-3xl md:text-4xl">
-                        Kandivali and Virar, serving Mumbai homes and AMCs
+                        We serve Mumbai to Palghar
                     </h2>
+                    <p className="mt-3 text-muted-foreground">
+                        Western Railway stations a crew can reach within 3 hours of the Kandivali
+                        office by train or bus.
+                    </p>
                     <ul className="mt-8 grid gap-4 sm:grid-cols-3">
                         {COMPANY_STATS.map((stat) => (
                             <li
@@ -23,7 +27,20 @@ export function Locations() {
                             </li>
                         ))}
                     </ul>
-                    <ul className="mt-8 space-y-4">
+                    <ul className="mt-8 space-y-5">
+                        {SERVICE_STATIONS.map((group) => (
+                            <li key={group.region}>
+                                <p className="text-sm font-semibold">{group.region}</p>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    {group.stations.join(" · ")}
+                                </p>
+                            </li>
+                        ))}
+                    </ul>
+                    <h3 className="mt-10 text-sm font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                        Offices
+                    </h3>
+                    <ul className="mt-4 space-y-4">
                         {BRANCHES.map((branch) => (
                             <li key={branch.name}>
                                 <p className="font-semibold">{branch.name} branch</p>

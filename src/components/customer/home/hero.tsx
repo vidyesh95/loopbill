@@ -1,7 +1,7 @@
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
-import {QuoteDialog} from "@/components/customer/quote-dialog";
-import {COMPANY_PHONES, whatsappUrl} from "@/lib/data/services";
+import { Button } from "@/components/ui/button";
+import { QuoteDialog } from "@/components/customer/quote-dialog";
+import { COMPANY_PHONES, whatsappUrl } from "@/lib/data/services";
 
 const primaryPhone = COMPANY_PHONES[1];
 
@@ -19,7 +19,7 @@ export default function Hero() {
             <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-28">
                 <div>
                     <p className="text-xs font-semibold tracking-[0.22em] text-primary uppercase">
-                        Mumbai · Kandivali · Virar
+                        Mumbai to Palghar · by train or bus
                     </p>
                     <h1 className="font-display mt-4 max-w-xl text-4xl leading-tight text-foreground md:text-6xl">
                         Pest-free homes and businesses,{" "}
