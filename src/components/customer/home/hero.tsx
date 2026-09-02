@@ -1,14 +1,12 @@
 import Link from "next/link";
-import {Bug} from "lucide-react";
+import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import {QuoteDialog} from "@/components/customer/quote-dialog";
 
 export default function Hero() {
     return (
-        <header className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-[#edebe4]">
-            <div className="mb-6 flex size-24 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Bug className="size-12" aria-hidden />
-            </div>
+        <header className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-gradient-to-b from-[#edebe4] to-[#f7f6f0]">
+            <Image alt="pest image" src="/sprayman.svg" width={300} height={300} />
             <h1 className="mb-4 max-w-3xl px-4 text-center text-3xl font-bold text-primary md:text-6xl">
                 Professional Pest Control Solutions
             </h1>
