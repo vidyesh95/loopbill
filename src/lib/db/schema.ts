@@ -185,3 +185,16 @@ export const notification = sqliteTable("notification", {
     dateTime: text("date_time").notNull(),
     actions: text("actions").notNull(),
 });
+
+export const lead = sqliteTable("lead", {
+    id: integer("id").primaryKey({autoIncrement: true}),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+    propertyType: text("property_type").notNull(),
+    service: text("service").notNull(),
+    message: text("message").notNull(),
+    source: text("source").notNull(),
+    status: text("status").notNull().default("new"),
+    createdAt: integer("created_at", {mode: "timestamp_ms"}).notNull(),
+});

@@ -1,64 +1,103 @@
 import type {NextRequest} from "next/server";
 import {NextResponse} from "next/server";
 import nodemailer from "nodemailer";
+import {db} from "@/lib/db";
+import {lead} from "@/lib/db/schema";
+import {COMPANY_EMAIL, getServiceBySlug} from "@/lib/data/services";
+import {leadRequestSchema} from "@/lib/leads";
 
-/**
- * POST /api/contact
- * Expects JSON:
- * {
- *   firstName: string;
- *   lastName:  string;
- *   email:     string;
- *   phone:     string;
- *   message:   string;
- * }
- */
+function smtpConfigured() {
+    return Boolean(
+        process.env.SMTP_HOST?.trim()
+        && process.env.SMTP_USER?.trim()
+        && process.env.SMTP_PASS?.trim(),
+    );
+}
+
 export async function POST(req: NextRequest) {
+    let body: unknown;
     try {
-        const body = await req.json() as {
-            firstName: string;
-            lastName: string;
-            email: string;
-            phone: string;
-            message: string;
-        };
+        body = await req.json();
+    } catch {
+        return NextResponse.json(
+            {ok: false, message: "Please check the form and try again."},
+            {status: 400},
+        );
+    }
 
-        // Build a readable text / HTML e-mail
-        const textContent = `
-New contact enquiry
+    const parsed = leadRequestSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            {ok: false, message: "Please check the form and try again."},
+            {status: 400},
+        );
+    }
+    const data = parsed.data;
 
-Name   : ${body.firstName} ${body.lastName}
-Email  : ${body.email}
-Phone  : ${body.phone}
+    const name = `${data.firstName} ${data.lastName}`.replace(/\s+/g, " ").trim();
+    const serviceTitle = getServiceBySlug(data.service)?.title ?? data.service;
+
+    try {
+        await db.insert(lead).values({
+            name,
+            email: data.email,
+            phone: data.phone,
+            propertyType: data.propertyType,
+            service: data.service,
+            message: data.message,
+            source: data.source,
+            status: "new",
+            createdAt: new Date(),
+        });
+    } catch (error) {
+        console.error("Failed to save lead", error);
+        return NextResponse.json(
+            {ok: false, message: "Unable to save your enquiry. Please try again."},
+            {status: 500},
+        );
+    }
+
+    if (!smtpConfigured()) {
+        console.warn("Lead saved without email: SMTP env vars are not set.");
+        return NextResponse.json({ok: true, emailed: false});
+    }
+
+    const textContent = `
+New website enquiry
+
+Name          : ${name}
+Email         : ${data.email}
+Phone         : ${data.phone}
+Property type : ${data.propertyType}
+Service       : ${serviceTitle}
+Source        : ${data.source}
 
 Message:
-${body.message}
+${data.message}
 `;
 
-        // Configure Nodemailer transport using environment variables
+    try {
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,          // e.g. "smtp.gmail.com"
-            port: Number(process.env.SMTP_PORT),  // e.g. 465
-            secure: true,
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT || 465),
+            secure: Number(process.env.SMTP_PORT || 465) === 465,
             auth: {
-                user: process.env.SMTP_USER,        // "<your-smtp-user>"
-                pass: process.env.SMTP_PASS,        // "<your-smtp-password>"
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
             },
         });
 
         await transporter.sendMail({
             from: `"Website Contact" <${process.env.SMTP_USER}>`,
-            to: "contact@urbanpestmaster.in",
-            subject: "New website enquiry",
+            to: COMPANY_EMAIL,
+            replyTo: data.email,
+            subject: `New website enquiry — ${serviceTitle}`,
             text: textContent,
         });
-
-        return NextResponse.json({ok: true});
-    } catch (err) {
-        console.error(err);
-        return NextResponse.json(
-            {ok: false, message: "Unable to send message."},
-            {status: 500}
-        );
+    } catch (error) {
+        console.error("Lead saved but email failed", error);
+        return NextResponse.json({ok: true, emailed: false});
     }
+
+    return NextResponse.json({ok: true, emailed: true});
 }

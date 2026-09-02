@@ -15,6 +15,13 @@
       "when": 1788260398399,
       "tag": "0001_brave_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788347682894,
+      "tag": "0002_loose_bloodstorm",
+      "breakpoints": true
     }
   ]
 }

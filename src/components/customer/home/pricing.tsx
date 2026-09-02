@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
+import { QuoteDialog } from '@/components/customer/quote-dialog'
 
 const plans = [
   {
@@ -96,7 +97,11 @@ const Pricing = () => (
                 ))}
               </ul>
 
-              <Button className="btn-primary mt-auto w-full">Get Started</Button>
+              <QuoteDialog
+                defaultSource={`pricing:${name}`}
+                defaultMessage={`Interested in the ${name} plan.`}
+                trigger={<Button className="btn-primary mt-auto w-full">Get Started</Button>}
+              />
             </li>
         ))}
       </ul>

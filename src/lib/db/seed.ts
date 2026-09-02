@@ -13,6 +13,7 @@ import {
     complaint,
     contract,
     customer,
+    lead,
     location,
     notification,
     notificationTemplate,
@@ -345,6 +346,7 @@ async function reset() {
     await db.delete(contract);
     await db.delete(location);
     await db.delete(customer);
+    await db.delete(lead);
     await db.delete(userPermission);
     await db.delete(session);
     await db.delete(account);

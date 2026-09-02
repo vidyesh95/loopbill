@@ -140,5 +140,13 @@
     /* Or directly: */
     animation: marquee 10s linear infinite; /* Adjust '15s' to control speed */
   }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .heading-gradient {
+    color: var(--primary);
+  }
 }
 
