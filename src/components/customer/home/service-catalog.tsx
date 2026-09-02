@@ -1,21 +1,31 @@
 import Link from "next/link";
-import {Bird, Bug, Grid3x3, Rat, Shield, TreePine} from "lucide-react";
-import type {LucideIcon} from "lucide-react";
+import type {ComponentType} from "react";
 import {Button} from "@/components/ui/button";
 import {QuoteDialog} from "@/components/customer/quote-dialog";
+import {
+    BedbugIcon,
+    BirdProofingIcon,
+    CockroachIcon,
+    InvisibleGrillIcon,
+    MosquitoIcon,
+    RatGuardIcon,
+    RodentIcon,
+    TermiteIcon,
+    WoodBorerIcon,
+} from "@/components/icons/service-icons";
 import {isPricedServiceSlug} from "@/lib/data/pricing";
 import {OTHER_SERVICES, PEST_SERVICES} from "@/lib/data/services";
 
-const ICONS: Record<string, LucideIcon> = {
-    bedbug: Bug,
-    cockroach: Bug,
-    mosquito: Bug,
-    rodent: Rat,
-    termite: TreePine,
-    "wood-borer": TreePine,
-    "invisible-grill": Grid3x3,
-    "bird-proofing": Bird,
-    "rat-guard": Shield,
+const ICONS: Record<string, ComponentType<{className?: string}>> = {
+    bedbug: BedbugIcon,
+    cockroach: CockroachIcon,
+    mosquito: MosquitoIcon,
+    rodent: RodentIcon,
+    termite: TermiteIcon,
+    "wood-borer": WoodBorerIcon,
+    "invisible-grill": InvisibleGrillIcon,
+    "bird-proofing": BirdProofingIcon,
+    "rat-guard": RatGuardIcon,
 };
 
 function ServiceCard({
@@ -27,12 +37,12 @@ function ServiceCard({
     title: string;
     summary: string;
 }) {
-    const Icon = ICONS[slug] ?? Bug;
+    const Icon = ICONS[slug];
     const priced = isPricedServiceSlug(slug);
 
     return (
         <li className="flex flex-col rounded-2xl border border-[oklch(0.86_0.015_95)] bg-[oklch(0.99_0.008_95)] p-6">
-            <Icon className="mb-4 size-6 text-primary" />
+            {Icon ? <Icon className="mb-4 size-6 text-primary" /> : null}
             <h3 className="text-xl font-semibold">
                 <Link href={`/services/${slug}`} className="hover:text-primary">
                     {title}
