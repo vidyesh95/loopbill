@@ -7,9 +7,10 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Lock, Mail, Phone} from "lucide-react";
 import Link from "next/link";
+import {GoogleSignInButton} from "@/components/auth/google-button";
 import {authClient, homeForRole} from "@/lib/auth-client";
 
-export default function SignUpForm() {
+export default function SignUpForm({googleEnabled}: {googleEnabled: boolean}) {
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
@@ -82,14 +83,16 @@ export default function SignUpForm() {
             <span className="flex gap-1 justify-center">
                 Already have an account?<Link href="/signin" className="text-primary font-semibold">Sign in</Link>
             </span>
-            <div className="w-full flex justify-between items-center gap-2 py-3">
-                <hr className="w-full"/>
-                <span className="flex-none text-xs">OR CONTINUE WITH</span>
-                <hr className="w-full"/>
-            </div>
-            <Button type="button" variant="outline" className="w-full" disabled>
-                <Mail className="me-2 h-4 w-4"/>Continue with Google
-            </Button>
+            {googleEnabled ? (
+                <>
+                    <div className="w-full flex justify-between items-center gap-2 py-3">
+                        <hr className="w-full"/>
+                        <span className="flex-none text-xs">OR CONTINUE WITH</span>
+                        <hr className="w-full"/>
+                    </div>
+                    <GoogleSignInButton callbackURL="/admin" requestSignUp/>
+                </>
+            ) : null}
         </form>
     );
 }

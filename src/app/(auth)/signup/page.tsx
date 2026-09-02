@@ -7,6 +7,7 @@ import {user} from "@/lib/db/schema";
 import SignUpForm from "@/components/auth/signup-form";
 import {getCurrentSession} from "@/lib/session";
 import {homeForRole} from "@/lib/roles";
+import {isGoogleOAuthConfigured} from "@/lib/oauth";
 
 export default async function SignUp() {
     const session = await getCurrentSession();
@@ -45,7 +46,7 @@ export default async function SignUp() {
                             </Link>
                         </div>
                     ) : (
-                        <SignUpForm/>
+                        <SignUpForm googleEnabled={isGoogleOAuthConfigured()}/>
                     )}
                 </CardContent>
                 <CardFooter className="text-xs">By signing up you accept Privacy Policy and Terms</CardFooter>

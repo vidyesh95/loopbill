@@ -1,8 +1,10 @@
+import {count} from "drizzle-orm";
 import {betterAuth} from "better-auth";
 import {drizzleAdapter} from "better-auth/adapters/drizzle";
 import {nextCookies} from "better-auth/next-js";
 import {db} from "@/lib/db";
 import * as schema from "@/lib/db/schema";
+import {isGoogleOAuthConfigured} from "@/lib/oauth";
 
 function trustedOrigins() {
     const origins = new Set<string>([process.env.BETTER_AUTH_URL ?? "http://localhost:3000"]);
@@ -11,6 +13,9 @@ function trustedOrigins() {
     }
     return [...origins];
 }
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
@@ -22,6 +27,40 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
+    },
+    socialProviders: isGoogleOAuthConfigured() && googleClientId && googleClientSecret
+        ? {
+            google: {
+                clientId: googleClientId,
+                clientSecret: googleClientSecret,
+                prompt: "select_account",
+                disableImplicitSignUp: true,
+            },
+        }
+        : {},
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ["google"],
+        },
+    },
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user) => {
+                    const [result] = await db.select({value: count()}).from(schema.user);
+                    const isFirstStaff = (result?.value ?? 0) === 0;
+                    return {
+                        data: {
+                            ...user,
+                            role: isFirstStaff ? "admin" : (user.role ?? "agent"),
+                            status: user.status ?? "active",
+                            department: user.department ?? (isFirstStaff ? "Management" : user.department),
+                        },
+                    };
+                },
+            },
+        },
     },
     user: {
         additionalFields: {

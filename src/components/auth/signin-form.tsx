@@ -9,12 +9,14 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Lock, Mail} from "lucide-react";
 import Link from "next/link";
 import AdvancedOptions from "@/components/auth/signin/advancedOption";
+import {GoogleSignInButton} from "@/components/auth/google-button";
 import {authClient, homeForRole} from "@/lib/auth-client";
+import {oauthErrorMessage} from "@/lib/oauth";
 
-export default function SignInForm() {
+export default function SignInForm({googleEnabled}: {googleEnabled: boolean}) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(() => oauthErrorMessage(searchParams.get("error")));
     const [pending, setPending] = useState(false);
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -80,14 +82,16 @@ export default function SignInForm() {
             <span className="flex gap-1 justify-center">
                 Don&#39;t have an account?<Link href="/signup" className="text-primary font-semibold">Sign up</Link>
             </span>
-            <div className="w-full flex justify-between items-center gap-2 py-3">
-                <hr className="w-full"/>
-                <span className="flex-none text-xs">OR CONTINUE WITH</span>
-                <hr className="w-full"/>
-            </div>
-            <Button type="button" variant="outline" className="w-full" disabled>
-                <Mail className="me-2 h-4 w-4"/>Continue with Google
-            </Button>
+            {googleEnabled ? (
+                <>
+                    <div className="w-full flex justify-between items-center gap-2 py-3">
+                        <hr className="w-full"/>
+                        <span className="flex-none text-xs">OR CONTINUE WITH</span>
+                        <hr className="w-full"/>
+                    </div>
+                    <GoogleSignInButton callbackURL={searchParams.get("next") ?? "/signin"}/>
+                </>
+            ) : null}
         </form>
     );
 }

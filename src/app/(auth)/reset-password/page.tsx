@@ -2,10 +2,13 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} f
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Lock, Mail} from "lucide-react";
+import {Lock} from "lucide-react";
 import Link from "next/link";
+import {GoogleSignInButton} from "@/components/auth/google-button";
+import {isGoogleOAuthConfigured} from "@/lib/oauth";
 
 export default function ResetPassword() {
+    const googleEnabled = isGoogleOAuthConfigured();
     return (
         <main className="min-h-screen py-4 flex flex-col justify-center items-center bg-[#edebe4]">
             <Link href="/" className="text-3xl font-bold text-primary text-center mb-2">
@@ -35,13 +38,16 @@ export default function ResetPassword() {
                         <span className="flex gap-1 justify-center">
                             Remembered password?<Link href="/signin" className="text-primary font-semibold">Sign in</Link>
                         </span>
-                        <div className="w-full flex justify-between items-center gap-2 py-3">
-                            <hr className="w-full"/>
-                            <span className="flex-none text-xs">OR CONTINUE WITH</span>
-                            <hr className="w-full"/>
-                        </div>
-                        <Button type="button" variant="outline" className="w-full"><Mail className="me-2 h-4 w-4"/>Continue
-                            with Google</Button>
+                        {googleEnabled ? (
+                            <>
+                                <div className="w-full flex justify-between items-center gap-2 py-3">
+                                    <hr className="w-full"/>
+                                    <span className="flex-none text-xs">OR CONTINUE WITH</span>
+                                    <hr className="w-full"/>
+                                </div>
+                                <GoogleSignInButton callbackURL="/signin"/>
+                            </>
+                        ) : null}
                     </form>
                 </CardContent>
                 <CardFooter className="text-xs">By signing in you accept Privacy Policy and Terms</CardFooter>

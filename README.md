@@ -58,7 +58,11 @@ pnpm db:seed
 
 Public sign-up is closed after staff exist. Create additional users from the admin portal later.
 
-Google sign-in is not wired yet.
+Google sign-in is on the sign-in page. The Google account email must already belong to a staff user (create that user in admin first). Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, and add this Authorized redirect URI in Google Cloud Console:
+
+`{BETTER_AUTH_URL}/api/auth/callback/google`
+
+If the database is empty, the first Google sign-up on `/signup` creates the administrator.
 
 ## Learn More
 

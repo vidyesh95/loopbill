@@ -5,6 +5,7 @@ import Link from "next/link";
 import SignInForm from "@/components/auth/signin-form";
 import {getCurrentSession} from "@/lib/session";
 import {homeForRole} from "@/lib/roles";
+import {isGoogleOAuthConfigured} from "@/lib/oauth";
 
 export default async function SignIn() {
     const session = await getCurrentSession();
@@ -26,7 +27,7 @@ export default async function SignIn() {
                 </CardHeader>
                 <CardContent>
                     <Suspense fallback={<p className="text-sm text-muted-foreground">Loading sign in...</p>}>
-                        <SignInForm/>
+                        <SignInForm googleEnabled={isGoogleOAuthConfigured()}/>
                     </Suspense>
                 </CardContent>
                 <CardFooter className="text-xs">By signing in you accept Privacy Policy and Terms</CardFooter>
