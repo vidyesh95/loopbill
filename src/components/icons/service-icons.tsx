@@ -79,18 +79,19 @@ export function MosquitoIcon(props: ServiceIconProps) {
 export function RodentIcon(props: ServiceIconProps) {
     return (
         <IconBase {...props}>
-            <path
-                d="M16.2 13.1c2.85-1.15 5.05.15 5.55 2.55.35 1.7-.55 3.85-2.15 5.05"
+            <g
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.55"
+                strokeWidth="2"
                 strokeLinecap="round"
-            />
-            <path
-                fillRule="evenodd"
-                d="M4.15 14.35c-.15-3.4 2.35-6.35 6.55-6.7 2.05-.15 3.45.45 4.55 1.35 1.55-1.45 3.85-1.2 4.55.55.5 1.25-.05 2.55-1.15 3.2 1.35 1.15 2.05 2.85 1.75 4.55-.5 2.85-3.55 4.85-7.35 4.85-3.55 0-6.55-1.55-7.55-4.05-.85.35-1.85.15-2.35-.7-.55-.95-.15-2.05.9-2.5.15-1.7.55-2.95.1-2.55zm2.2-1.5a.7.7 0 1 1 1.4 0 .7.7 0 0 1-1.4 0z"
-            />
-            <circle cx="10.15" cy="9.05" r="1.85" />
+                strokeLinejoin="round"
+            >
+                <path d="M13 22H4a2 2 0 0 1 0-4h12" />
+                <path d="M13.236 18a3 3 0 0 0-2.2-5" />
+                <path d="M16 9h.01" />
+                <path d="M16.82 3.94a3 3 0 1 1 3.237 4.868l1.815 2.587a1.5 1.5 0 0 1-1.5 2.1l-2.872-.453a3 3 0 0 0-3.5 3" />
+                <path d="M17 4.988a3 3 0 1 0-5.2 2.052A7 7 0 0 0 4 14.015 4 4 0 0 0 8 18" />
+            </g>
         </IconBase>
     );
 }
