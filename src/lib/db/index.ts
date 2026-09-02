@@ -5,11 +5,16 @@ import * as schema from "./schema";
 
 function databaseUrl() {
     const url = process.env.TURSO_DATABASE_URL?.trim();
-    if (!url || url.startsWith("file:")) {
-        const filePath = url?.replace(/^file:/, "") || "local.db";
-        return `file:${path.resolve(process.cwd(), filePath)}`;
+    if (url && !url.startsWith("file:")) {
+        return url;
     }
-    return url;
+
+    if (process.env.VERCEL) {
+        throw new Error("TURSO_DATABASE_URL must be a remote libsql URL on Vercel");
+    }
+
+    const filePath = url?.replace(/^file:/, "") || "local.db";
+    return `file:${path.resolve(/* turbopackIgnore: true */ process.cwd(), filePath)}`;
 }
 
 function createDb(url: string) {
