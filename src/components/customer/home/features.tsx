@@ -1,40 +1,56 @@
+import Link from "next/link";
+
+const reasons = [
+    {
+        title: "Two rate cards, one crew",
+        description:
+            "Homes pay by BHK. Offices and kitchens pay by square feet. Both can choose One Time, 1 Year, or 2 Year.",
+    },
+    {
+        title: "The pests Mumbai actually has",
+        description:
+            "Bedbug, cockroach, mosquito, rodent, termite, and wood borer — plus invisible grill, bird proofing, and rat guard.",
+    },
+    {
+        title: "Book the way you already talk",
+        description:
+            "Call +91 86001 39094, send a WhatsApp, or leave a quote. We confirm the visit before anyone arrives.",
+    },
+];
+
 export default function Features() {
     return (
-        <section className="bg-[#eeebe4] py-20">
-            {/* Heading and subheading */}
-            <header className="mx-auto mb-16 max-w-2xl text-center px-4">
-                <h2 className="mb-4 text-3xl font-bold">Why Choose UrbanPestMaster?</h2>
-                <p className="text-gray-600">Expert pest control services you can trust</p>
+        <section className="bg-[oklch(0.965_0.012_95)] py-20">
+            <header className="mx-auto mb-12 max-w-2xl px-4 text-center">
+                <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+                    Why Urban Pest Master
+                </p>
+                <h2 className="font-display mt-3 text-3xl md:text-4xl">
+                    Built around homes and AMCs, not monthly software plans
+                </h2>
             </header>
 
-            {/* Feature cards */}
-            <ul className="mx-auto grid max-w-7xl gap-4 px-4 grid-cols-1 md:grid-cols-3">
-                {[
-                    {
-                        title: 'Expert Team',
-                        description:
-                            'Our certified professionals have years of experience in pest control.',
-                    },
-                    {
-                        title: '24/7 Service',
-                        description:
-                            'Emergency pest control services available around the clock.',
-                    },
-                    {
-                        title: 'Guaranteed Results',
-                        description:
-                            'We stand behind our work with a 100% satisfaction guarantee.',
-                    },
-                ].map(({title, description}) => (
+            <ul className="mx-auto grid max-w-6xl gap-4 px-4 md:grid-cols-3">
+                {reasons.map(({title, description}) => (
                     <li
                         key={title}
-                        className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm"
+                        className="rounded-2xl border border-[oklch(0.86_0.015_95)] bg-[oklch(0.99_0.008_95)] p-6"
                     >
-                        <h3 className="mb-3 text-xl font-semibold">{title}</h3>
-                        <p className="text-gray-600">{description}</p>
+                        <h3 className="text-xl font-semibold">{title}</h3>
+                        <p className="mt-3 text-muted-foreground">{description}</p>
                     </li>
                 ))}
             </ul>
+
+            <p className="mt-10 text-center text-sm text-muted-foreground">
+                <Link href="/residential" className="text-primary underline-offset-4 hover:underline">
+                    Residential
+                </Link>
+                {" · "}
+                <Link href="/commercial" className="text-primary underline-offset-4 hover:underline">
+                    Commercial
+                </Link>
+            </p>
         </section>
     );
 }

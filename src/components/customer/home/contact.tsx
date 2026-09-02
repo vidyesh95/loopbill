@@ -1,33 +1,35 @@
 import {QuoteForm} from "@/components/customer/quote-form";
-import {COMPANY_EMAIL, COMPANY_PHONES, WHATSAPP_URL} from "@/lib/data/services";
+import {
+    BRANCHES,
+    COMPANY_EMAIL,
+    COMPANY_PHONES,
+    whatsappUrl,
+} from "@/lib/data/services";
 
 const Contact = () => {
     return (
-        <section id="contact" className="flex flex-col bg-[#f7f6f0]">
-            <header className="mx-auto max-w-3xl py-20 text-center">
-                <h1 className="heading-gradient mb-6 text-4xl font-bold">
-                    Get in Touch
-                </h1>
-                <p className="text-xl text-gray-600">
-                    We&apos;re here to help with all your pest control needs
+        <section id="contact" className="flex flex-col bg-[oklch(0.965_0.012_95)]">
+            <header className="mx-auto max-w-3xl px-4 py-20 text-center">
+                <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+                    Contact
+                </p>
+                <h2 className="font-display mt-3 text-4xl">Call, WhatsApp, or send a quote</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    The same number answers homes and commercial sites.
                 </p>
             </header>
 
-            <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 pb-20 lg:grid-cols-2">
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-4 pb-20 lg:grid-cols-2">
                 <article className="space-y-6">
-                    <h2 className="text-2xl font-bold">Contact Information</h2>
-
-                    <ul className="space-y-2 text-gray-600">
-                        <li>
-                            <strong>Kandivali Branch:<br /></strong>
-                            Shop no. 1, Ram Bhagat Pandey Apartment,<br />
-                            Poisar, Kandivali (E) - 400 101
-                        </li>
-                        <li>
-                            <strong>Virar Branch:<br /></strong>
-                            Shop no. 10, Yashwant Nagar,<br />
-                            Virar (W) - 401 303
-                        </li>
+                    <h3 className="text-2xl font-semibold">Branches</h3>
+                    <ul className="space-y-4 text-muted-foreground">
+                        {BRANCHES.map((branch) => (
+                            <li key={branch.name}>
+                                <strong className="text-foreground">{branch.name} branch</strong>
+                                <br />
+                                {branch.address}
+                            </li>
+                        ))}
                         <li>
                             <a href={`mailto:${COMPANY_EMAIL}`}>{COMPANY_EMAIL}</a>
                         </li>
@@ -37,28 +39,28 @@ const Contact = () => {
                             </li>
                         ))}
                         <li>
-                            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">
+                            <a href={whatsappUrl()} target="_blank" rel="noreferrer">
                                 WhatsApp +91 86001 39094
                             </a>
                         </li>
                     </ul>
 
                     <div>
-                        <h3 className="mb-2 font-semibold">Office Hours</h3>
-                        <p className="text-gray-600">Monday – Friday: 8 am – 6 pm</p>
-                        <p className="text-gray-600">Saturday: 9 am – 2 pm</p>
-                        <p className="text-gray-600">Sunday: Closed</p>
+                        <h4 className="mb-2 font-semibold">Office hours</h4>
+                        <p className="text-muted-foreground">Monday – Friday: 8 am – 6 pm</p>
+                        <p className="text-muted-foreground">Saturday: 9 am – 2 pm</p>
+                        <p className="text-muted-foreground">Sunday: Closed</p>
                     </div>
 
                     <div>
-                        <h3 className="mb-2 font-semibold">Emergency Service</h3>
-                        <p className="text-gray-600">
-                            24/7 emergency pest control services available
+                        <h4 className="mb-2 font-semibold">Emergency service</h4>
+                        <p className="text-muted-foreground">
+                            After-hours jobs go through the same WhatsApp number.
                         </p>
                     </div>
                 </article>
 
-                <div className="space-y-6 rounded-lg bg-white p-8">
+                <div className="space-y-6 rounded-2xl border border-[oklch(0.86_0.015_95)] bg-[oklch(0.99_0.008_95)] p-8">
                     <QuoteForm defaultSource="contact" />
                 </div>
             </div>

@@ -12,11 +12,36 @@ export type ServiceOffering = {
 };
 
 export const COMPANY_EMAIL = "contact@urbanpestmaster.in";
-export const WHATSAPP_URL = "https://wa.me/918600139094";
+export const WHATSAPP_NUMBER = "918600139094";
+export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 export const COMPANY_PHONES = [
     {display: "+91 74985 18198", href: "tel:+917498518198"},
     {display: "+91 86001 39094", href: "tel:+918600139094"},
 ] as const;
+
+export const BRANCHES = [
+    {
+        name: "Kandivali",
+        address: "Shop no. 1, Ram Bhagat Pandey Apartment, Poisar, Kandivali (E) - 400 101",
+    },
+    {
+        name: "Virar",
+        address: "Shop no. 10, Yashwant Nagar, Virar (W) - 401 303",
+    },
+] as const;
+
+export const COMPANY_STATS = [
+    {value: "1200+", label: "Residential services completed"},
+    {value: "500+", label: "AMCs we serve"},
+    {value: "3+", label: "Locations"},
+] as const;
+
+export function whatsappUrl(message?: string) {
+    if (!message?.trim()) {
+        return WHATSAPP_URL;
+    }
+    return `${WHATSAPP_URL}?text=${encodeURIComponent(message.trim())}`;
+}
 
 export const SERVICES: ServiceOffering[] = [
     {

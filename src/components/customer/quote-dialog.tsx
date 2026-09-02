@@ -33,7 +33,11 @@ export function QuoteDialog({
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
-                <QuoteForm {...formProps} onSuccess={() => setOpen(false)} />
+                <QuoteForm
+                    key={`${formProps.defaultService}-${formProps.defaultPropertyType}-${formProps.defaultMessage}`}
+                    {...formProps}
+                    onSuccess={() => setOpen(false)}
+                />
             </DialogContent>
         </Dialog>
     );
