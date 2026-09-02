@@ -58,7 +58,7 @@ const CalendarView = ({isOpen, onClose, services}: CalendarViewProps) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-auto">
+            <DialogContent className="sm:max-w-225 max-h-[80vh] overflow-auto">
                 <DialogHeader>
                     <DialogTitle>Calendar View</DialogTitle>
                     <DialogDescription>
