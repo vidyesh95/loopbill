@@ -20,22 +20,25 @@ function IconBase({children, className, ...props}: ServiceIconProps & {children:
 export function BedbugIcon(props: ServiceIconProps) {
     return (
         <IconBase {...props}>
-            <path
+            <g
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.35"
+                strokeWidth="2"
                 strokeLinecap="round"
-                d="M8.15 8.15 4.2 6.05M7.35 12.25 3.05 12.45M8.2 16.45 4.35 19.25M15.85 8.15 19.8 6.05M16.65 12.25 20.95 12.45M15.8 16.45 19.65 19.25"
-            />
-            <path
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                d="M10.35 5.35c-1.15-1.55-2.7-2.05-3.95-1.45M13.65 5.35c1.15-1.55 2.7-2.05 3.95-1.45"
-            />
-            <ellipse cx="12" cy="13.15" rx="5.05" ry="6.15" />
-            <ellipse cx="12" cy="6.55" rx="2.35" ry="2.05" />
+                strokeLinejoin="round"
+            >
+                <path d="M12 20v-9" />
+                <path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z" />
+                <path d="M14.12 3.88 16 2" />
+                <path d="M21 21a4 4 0 0 0-3.81-4" />
+                <path d="M21 5a4 4 0 0 1-3.55 3.97" />
+                <path d="M22 13h-4" />
+                <path d="M3 21a4 4 0 0 1 3.81-4" />
+                <path d="M3 5a4 4 0 0 0 3.55 3.97" />
+                <path d="M6 13H2" />
+                <path d="m8 2 1.88 1.88" />
+                <path d="M9 7.13V6a3 3 0 1 1 6 0v1.13" />
+            </g>
         </IconBase>
     );
 }
