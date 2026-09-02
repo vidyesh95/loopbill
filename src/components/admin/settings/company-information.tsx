@@ -136,7 +136,7 @@ const defaultBranch: BranchValues["branches"][0] = {
 };
 
 export default function CompanyInformation() {
-  const form = useForm<FormInput, any, FormOutput>({
+  const form = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       companyName: "UrbanPestMaster",

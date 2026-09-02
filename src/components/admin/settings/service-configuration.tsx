@@ -68,7 +68,7 @@ const defaultService: ServiceFormOutput["services"][0] = {
 
 // RHF setup
 export default function ServiceConfiguration() {
-  const form = useForm<ServiceFormInput, any, ServiceFormOutput>({
+  const form = useForm<ServiceFormInput, unknown, ServiceFormOutput>({
     resolver: zodResolver(serviceConfigurationSchema),
     defaultValues: {
       services: [defaultService],

@@ -9,6 +9,18 @@ import { cn } from "@/lib/utils";
 const INITIAL_DIMENSION = { width: 320, height: 200 } as const;
 type TooltipNameType = number | string;
 
+function toChartKey(...candidates: unknown[]) {
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate) {
+      return candidate;
+    }
+    if (typeof candidate === "number") {
+      return String(candidate);
+    }
+  }
+  return "value";
+}
+
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
 
@@ -140,7 +152,7 @@ function ChartTooltipContent({
     }
 
     const [item] = payload;
-    const key = `${labelKey || item?.dataKey || item?.name || "value"}`;
+    const key = toChartKey(labelKey, item?.dataKey, item?.name);
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
       !labelKey && typeof label === "string"
@@ -178,7 +190,7 @@ function ChartTooltipContent({
         {payload
           .filter((item) => item.type !== "none")
           .map((item, index) => {
-            const key = `${nameKey || item.name || item.dataKey || "value"}`;
+            const key = toChartKey(nameKey, item.name, item.dataKey);
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
             const indicatorColor = color || item.payload?.fill || item.color;
 
@@ -275,7 +287,7 @@ function ChartLegendContent({
       )}
     >
       {payload.map((item) => {
-        const key = `${nameKey || item.dataKey || "value"}`;
+        const key = toChartKey(nameKey, item.dataKey);
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
         return (

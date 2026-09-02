@@ -146,7 +146,6 @@ const NewServiceModal = ({ isOpen, onClose }: NewServiceModalProps) => {
                     mode="single"
                     selected={selectedDate}
                     onSelect={setSelectedDate}
-                    autoFocus
                     className="pointer-events-auto"
                   />
                 </PopoverContent>

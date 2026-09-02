@@ -8,11 +8,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Mail, Phone, Calendar, Clock, Shield, Building, User } from "lucide-react";
+import type { StaffUserRow } from "@/lib/data/types";
 
 interface UserDetailsModalProps {
   isOpen: boolean;
   onClose: (open: boolean) => void;
-  user: any;
+  user: StaffUserRow | null;
 }
 
 const UserDetailsModal = ({ isOpen, onClose, user }: UserDetailsModalProps) => {
@@ -68,22 +69,22 @@ const UserDetailsModal = ({ isOpen, onClose, user }: UserDetailsModalProps) => {
             </h3>
             <div className="grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">Full Name</label>
+                <p className="text-sm font-medium text-gray-600">Full Name</p>
                 <p className="text-sm font-medium">{user.name}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">User ID</label>
+                <p className="text-sm font-medium text-gray-600">User ID</p>
                 <p className="text-sm font-medium">{user.id}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Email Address</label>
+                <p className="text-sm font-medium text-gray-600">Email Address</p>
                 <p className="flex items-center gap-1 text-sm font-medium">
                   <Mail className="h-4 w-4" />
                   {user.email}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Phone Number</label>
+                <p className="text-sm font-medium text-gray-600">Phone Number</p>
                 <p className="flex items-center gap-1 text-sm font-medium">
                   <Phone className="h-4 w-4" />
                   {user.phone}
@@ -100,15 +101,15 @@ const UserDetailsModal = ({ isOpen, onClose, user }: UserDetailsModalProps) => {
             </h3>
             <div className="grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">Role</label>
+                <p className="text-sm font-medium text-gray-600">Role</p>
                 <div className="mt-1">{getRoleBadge(user.role)}</div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Department</label>
+                <p className="text-sm font-medium text-gray-600">Department</p>
                 <p className="text-sm font-medium">{user.department}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Status</label>
+                <p className="text-sm font-medium text-gray-600">Status</p>
                 <div className="mt-1">{getStatusBadge(user.status)}</div>
               </div>
             </div>
@@ -122,14 +123,14 @@ const UserDetailsModal = ({ isOpen, onClose, user }: UserDetailsModalProps) => {
             </h3>
             <div className="grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">Created Date</label>
+                <p className="text-sm font-medium text-gray-600">Created Date</p>
                 <p className="flex items-center gap-1 text-sm font-medium">
                   <Calendar className="h-4 w-4" />
                   {user.createdDate}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Last Login</label>
+                <p className="text-sm font-medium text-gray-600">Last Login</p>
                 <p className="flex items-center gap-1 text-sm font-medium">
                   <Clock className="h-4 w-4" />
                   {user.lastLogin}

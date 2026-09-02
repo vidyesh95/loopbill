@@ -13,11 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Shield, Save } from "lucide-react";
 import { toast } from "sonner";
+import type { StaffUserRow } from "@/lib/data/types";
 
 interface ManageUserRoleModalProps {
   isOpen: boolean;
   onClose: (open: boolean) => void;
-  user: any;
+  user: StaffUserRow | null;
 }
 
 const availablePermissions = [

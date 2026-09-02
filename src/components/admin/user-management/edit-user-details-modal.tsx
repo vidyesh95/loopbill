@@ -21,11 +21,12 @@ import {
 } from "@/components/ui/select";
 import { Edit, Save } from "lucide-react";
 import { toast } from "sonner";
+import type { StaffUserRow } from "@/lib/data/types";
 
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: (open: boolean) => void;
-  user: any;
+  user: StaffUserRow | null;
 }
 
 function getUserFormData(user: EditUserModalProps["user"]) {

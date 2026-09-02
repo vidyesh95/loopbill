@@ -1,4 +1,4 @@
-import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, count, eq, inArray, ne, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   complaint,
@@ -7,7 +7,6 @@ import {
   location,
   notification,
   notificationTemplate,
-  packageCatalog,
   service,
   user,
   userPermission,

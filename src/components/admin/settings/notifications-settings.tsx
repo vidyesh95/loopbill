@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod/v4";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -57,7 +57,10 @@ export default function NotificationsSettings() {
     },
   });
 
-  const notificationEnabled = form.watch("notificationsEnabled");
+  const notificationEnabled = useWatch({
+    control: form.control,
+    name: "notificationsEnabled",
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);

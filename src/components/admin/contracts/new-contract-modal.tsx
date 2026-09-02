@@ -33,10 +33,23 @@ interface NewContractModalProps {
   onClose: (open: boolean) => void;
 }
 
+type ContractFormValues = {
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  customerAddress: string;
+  serviceType: string;
+  contractValue: string;
+  paymentFrequency: string;
+  startDate: string;
+  duration: string;
+  specialTerms: string;
+};
+
 const NewContractModal = ({ isOpen, onClose }: NewContractModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm({
+  const form = useForm<ContractFormValues>({
     defaultValues: {
       customerName: "",
       customerPhone: "",
@@ -51,7 +64,7 @@ const NewContractModal = ({ isOpen, onClose }: NewContractModalProps) => {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ContractFormValues) => {
     setIsLoading(true);
     try {
       console.log("Creating new contract:", data);
