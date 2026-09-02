@@ -32,7 +32,7 @@ export default function ResetPassword() {
                             <Label htmlFor="password"><Lock className="h-4 w-4"/>Confirm Password</Label>
                             <Input type="password" id="password" placeholder="Enter your password again" required/>
                         </div>
-                        <Link href="/admin">
+                        <Link href="/signin">
                             <Button type="submit" variant="default" className="w-full">Reset password</Button>
                         </Link>
                         <span className="flex gap-1 justify-center">

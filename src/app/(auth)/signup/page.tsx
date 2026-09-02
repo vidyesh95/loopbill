@@ -12,7 +12,10 @@ import {isGoogleOAuthConfigured} from "@/lib/oauth";
 export default async function SignUp() {
     const session = await getCurrentSession();
     if (session) {
-        redirect(homeForRole(session.user.role));
+        const home = homeForRole(session.user.role);
+        if (home !== "/signin") {
+            redirect(home);
+        }
     }
 
     const [result] = await db.select({value: count()}).from(user);

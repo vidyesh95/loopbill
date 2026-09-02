@@ -120,12 +120,21 @@ const serviceTypes = [
 
 const existingStaff = [
     {
-        name: "Rajesh Kumar",
-        email: "rajesh.kumar@pestcontrol.com",
-        phone: "+91 98765 43210",
+        name: "Vidyesh",
+        email: "vidyesh95@gmail.com",
+        phone: "",
         role: "admin",
         status: "active",
         department: "Management",
+        createdAt: new Date("2023-06-01"),
+    },
+    {
+        name: "Rajesh Kumar",
+        email: "rajesh.kumar@pestcontrol.com",
+        phone: "+91 98765 43210",
+        role: "salesperson",
+        status: "active",
+        department: "Sales",
         createdAt: new Date("2023-06-01"),
     },
     {
@@ -644,10 +653,9 @@ async function seed() {
 
     await db.insert(notificationTemplate).values(templates);
 
-    const [staffCount] = await db.select().from(user);
+    const admin = existingStaff.find((staff) => staff.role === "admin");
     console.log(`Seeded ${existingStaff.length} staff (password: ${DEV_PASSWORD})`);
-    console.log(`Admin login: ${existingStaff[0]?.email} / ${DEV_PASSWORD}`);
-    void staffCount;
+    console.log(`Admin login: ${admin?.email} / ${DEV_PASSWORD}`);
 }
 
 seed()

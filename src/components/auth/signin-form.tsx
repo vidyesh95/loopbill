@@ -8,12 +8,11 @@ import {Label} from "@/components/ui/label";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Lock, Mail} from "lucide-react";
 import Link from "next/link";
-import AdvancedOptions from "@/components/auth/signin/advancedOption";
 import {GoogleSignInButton} from "@/components/auth/google-button";
 import {authClient, homeForRole} from "@/lib/auth-client";
 import {oauthErrorMessage} from "@/lib/oauth";
 
-export default function SignInForm({googleEnabled}: {googleEnabled: boolean}) {
+export default function SignInForm({googleEnabled, allowSignup}: {googleEnabled: boolean; allowSignup?: boolean}) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [error, setError] = useState<string | null>(() => oauthErrorMessage(searchParams.get("error")));
@@ -72,16 +71,16 @@ export default function SignInForm({googleEnabled}: {googleEnabled: boolean}) {
                 <Link href="/forgotpassword" className="text-sm text-primary font-semibold">Forgot password?</Link>
             </div>
 
-            <AdvancedOptions />
-
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
             <Button type="submit" variant="default" className="w-full" disabled={pending}>
                 {pending ? "Signing in..." : "Sign in"}
             </Button>
-            <span className="flex gap-1 justify-center">
-                Don&#39;t have an account?<Link href="/signup" className="text-primary font-semibold">Sign up</Link>
-            </span>
+            {allowSignup ? (
+                <span className="flex gap-1 justify-center">
+                    Don&#39;t have an account?<Link href="/signup" className="text-primary font-semibold">Sign up</Link>
+                </span>
+            ) : null}
             {googleEnabled ? (
                 <>
                     <div className="w-full flex justify-between items-center gap-2 py-3">

@@ -19,7 +19,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) and sign in as:
 
-- Email: `rajesh.kumar@pestcontrol.com`
+- Email: `vidyesh95@gmail.com`
 - Password: `Password123!`
 
 Other seeded staff use the same password. Customers are records only — they do not get portal logins.
