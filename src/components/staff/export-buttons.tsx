@@ -62,9 +62,12 @@ export function ExportButtons({ payload }: { payload: ExportPayload }) {
         <Download />
         Export CSV
       </Button>
-      <Button className="cursor-pointer" onClick={() => {
-        window.location.href = "/api/reports/pdf";
-      }}>
+      <Button
+        className="cursor-pointer"
+        onClick={() => {
+          window.location.href = "/api/reports/pdf";
+        }}
+      >
         Export PDF
       </Button>
     </div>

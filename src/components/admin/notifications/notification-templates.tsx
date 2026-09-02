@@ -59,7 +59,12 @@ export default function NotificationTemplates({
                 <Button type="submit" size="sm">
                   Save
                 </Button>
-                <Button type="button" size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setEditingId(null)}
+                >
                   Cancel
                 </Button>
               </div>

@@ -49,7 +49,9 @@ export default function NotificationAnalytics({
           </CardHeader>
           <CardContent>
             <h1 className="text-2xl font-bold">{deliveryRate}%</h1>
-            <CardDescription className="py-2 text-xs">{delivered} of {total}</CardDescription>
+            <CardDescription className="py-2 text-xs">
+              {delivered} of {total}
+            </CardDescription>
           </CardContent>
         </Card>
         <Card>

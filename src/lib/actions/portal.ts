@@ -53,10 +53,7 @@ export async function provisionCustomerLogin(input: {
     createdAt: now,
     updatedAt: now,
   });
-  await db
-    .update(customer)
-    .set({ userId: id, email: input.email })
-    .where(eq(customer.id, row.id));
+  await db.update(customer).set({ userId: id, email: input.email }).where(eq(customer.id, row.id));
 
   revalidatePath("/salesperson/customers");
   revalidatePath("/admin/user-management");

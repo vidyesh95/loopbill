@@ -74,10 +74,7 @@ export async function markInvoicePaid(id: number): Promise<ActionResult> {
   if (row.status === "Void") {
     return fail("Void invoices cannot be marked paid");
   }
-  await db
-    .update(invoice)
-    .set({ status: "Paid", paidAt: new Date() })
-    .where(eq(invoice.id, id));
+  await db.update(invoice).set({ status: "Paid", paidAt: new Date() }).where(eq(invoice.id, id));
   if (row.contractId) {
     const open = await db
       .select()

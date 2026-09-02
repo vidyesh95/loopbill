@@ -350,8 +350,8 @@ export default function WebsiteClient({
           >
             <h2 className="font-semibold">Service stations</h2>
             <p className="text-xs text-muted-foreground">
-              First line is the region. Next line is stations separated by commas. Blank line between
-              regions.
+              First line is the region. Next line is stations separated by commas. Blank line
+              between regions.
             </p>
             <Textarea
               name="stations"

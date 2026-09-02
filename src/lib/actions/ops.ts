@@ -244,7 +244,9 @@ export async function setContractLocked(id: number, locked: boolean): Promise<Ac
     await db
       .update(invoice)
       .set({ status: "Void" })
-      .where(and(eq(invoice.contractId, id), inArray(invoice.status, ["Draft", "Issued", "Overdue"])));
+      .where(
+        and(eq(invoice.contractId, id), inArray(invoice.status, ["Draft", "Issued", "Overdue"])),
+      );
   }
   revalidateOps();
   revalidatePath("/admin/billing");

@@ -54,11 +54,7 @@ export function InvoiceDocument(props: {
   );
 }
 
-export function ReportDocument(props: {
-  title: string;
-  generatedAt: string;
-  lines: string[];
-}) {
+export function ReportDocument(props: { title: string; generatedAt: string; lines: string[] }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>

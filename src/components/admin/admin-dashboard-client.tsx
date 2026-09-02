@@ -59,9 +59,7 @@ export default function AdminDashboardClient({
           <p className="text-muted-foreground">Overview of UrbanPestMaster operations</p>
         </div>
         <div className="flex items-center gap-2">
-          <ExportButtons
-            payload={{ stats, agentPerformance, complaintStatus, serviceTrends }}
-          />
+          <ExportButtons payload={{ stats, agentPerformance, complaintStatus, serviceTrends }} />
           <Button
             type="button"
             variant="default"

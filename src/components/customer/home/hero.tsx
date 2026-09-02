@@ -44,7 +44,9 @@ export default function Hero() {
               trigger={<Button className="btn-primary">Get a free quote</Button>}
             />
             <Button asChild variant="outline">
-              <a href={whatsappUrl("I want to book a pest control service.", company.whatsappNumber)}>
+              <a
+                href={whatsappUrl("I want to book a pest control service.", company.whatsappNumber)}
+              >
                 WhatsApp {primaryPhone?.display ?? company.phone}
               </a>
             </Button>

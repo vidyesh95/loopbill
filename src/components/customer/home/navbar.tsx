@@ -20,7 +20,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { whatsappUrl } from "@/lib/data/services";
-import { usePublicCompany, usePublishedServices, usePublicSite } from "@/components/customer/public-site-context";
+import {
+  usePublicCompany,
+  usePublishedServices,
+  usePublicSite,
+} from "@/components/customer/public-site-context";
 
 const links = [
   { href: "/residential", label: "Residential" },
@@ -165,7 +169,9 @@ export default function Navbar() {
               </Link>
             </Button>
             <Button asChild className="btn-primary">
-              <a href={whatsappUrl("I want to book a pest control service.", company.whatsappNumber)}>
+              <a
+                href={whatsappUrl("I want to book a pest control service.", company.whatsappNumber)}
+              >
                 Get a quote
               </a>
             </Button>

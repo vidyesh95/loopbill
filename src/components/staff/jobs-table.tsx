@@ -59,7 +59,12 @@ export function JobsTable({
                 <div className="flex gap-1">
                   {job.proofs.slice(0, 3).map((url) => (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img key={url} src={url} alt="" className="size-8 rounded border object-cover" />
+                    <img
+                      key={url}
+                      src={url}
+                      alt=""
+                      className="size-8 rounded border object-cover"
+                    />
                   ))}
                 </div>
               )}

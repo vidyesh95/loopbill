@@ -64,13 +64,7 @@ function DraggableJob({ service }: { service: CalendarService }) {
   );
 }
 
-function DayCell({
-  date,
-  jobs,
-}: {
-  date: Date;
-  jobs: CalendarService[];
-}) {
+function DayCell({ date, jobs }: { date: Date; jobs: CalendarService[] }) {
   const id = format(date, "yyyy-MM-dd");
   const { setNodeRef, isOver } = useDroppable({ id, data: { date: id } });
   return (

@@ -25,9 +25,7 @@ export default async function Reports() {
           <h1 className="text-2xl font-bold md:text-3xl">Reports</h1>
           <p className="text-muted-foreground">Overview of UrbanPestMaster operations</p>
         </div>
-        <ExportButtons
-          payload={{ stats, agentPerformance, complaintStatus, serviceTrends }}
-        />
+        <ExportButtons payload={{ stats, agentPerformance, complaintStatus, serviceTrends }} />
       </div>
       <TopStatisticsCards stats={stats} />
       <hr />

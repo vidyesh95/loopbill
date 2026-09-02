@@ -39,7 +39,9 @@ export function PriceCalculator({
   source,
 }: PriceCalculatorProps) {
   const rates = usePublicPricing();
-  const initialService = isPricedServiceSlug(defaultService ?? "") ? defaultService : (rates[0]?.slug ?? "cockroach");
+  const initialService = isPricedServiceSlug(defaultService ?? "")
+    ? defaultService
+    : (rates[0]?.slug ?? "cockroach");
 
   const [service, setService] = useState<PricedServiceSlug>(initialService as PricedServiceSlug);
   const [bhk, setBhk] = useState<BhkValue>("1bhk");

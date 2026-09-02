@@ -9,7 +9,9 @@ export function Crew() {
   return (
     <section className="bg-[oklch(0.96_0.01_95)] px-4 py-24 md:py-32">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-medium tracking-[0.22em] text-primary uppercase">{crew.eyebrow}</p>
+        <p className="text-xs font-medium tracking-[0.22em] text-primary uppercase">
+          {crew.eyebrow}
+        </p>
         <h2 className="mt-4 font-display text-4xl tracking-tight text-foreground md:text-5xl">
           {crew.title}
         </h2>

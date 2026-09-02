@@ -38,9 +38,7 @@ export default function TopNavbar({ name = "Admin", email = "" }: TopNavbarProps
       {/*Notifications*/}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-200"
-          >
+          <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-200">
             <Bell size={18} />
           </div>
         </DropdownMenuTrigger>
@@ -93,9 +91,7 @@ export default function TopNavbar({ name = "Admin", email = "" }: TopNavbarProps
       {/*Upcoming services*/}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-200"
-          >
+          <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-200">
             <Calendar size={18} />
           </div>
         </DropdownMenuTrigger>
@@ -127,18 +123,14 @@ export default function TopNavbar({ name = "Admin", email = "" }: TopNavbarProps
       {/*Authentication and authorization*/}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div
-            className="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-gray-200"
-          >
+          <div className="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-gray-200">
             <Image src="/profile_image.png" width={38} height={38} alt="Profile image" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-90">
           <DropdownMenuLabel>
             <div className="flex items-center gap-2">
-              <div
-                className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-gray-200"
-              >
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-gray-200">
                 <Image src="/profile_image.png" width={64} height={64} alt="Profile image" />
               </div>
               <div>

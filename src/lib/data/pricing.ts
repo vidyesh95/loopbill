@@ -55,7 +55,10 @@ export type PricedServiceRate = {
   commercialPerSqft: number;
 };
 
-export function getPricedService(slug: string, rates: readonly PricedServiceRate[] = PRICED_SERVICES) {
+export function getPricedService(
+  slug: string,
+  rates: readonly PricedServiceRate[] = PRICED_SERVICES,
+) {
   return rates.find((service) => service.slug === slug);
 }
 
