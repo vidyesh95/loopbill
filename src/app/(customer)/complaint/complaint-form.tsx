@@ -8,6 +8,7 @@ import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import {submitPublicComplaint} from "@/lib/actions/public";
 import {COMPLAINT_TYPES} from "@/lib/data/status";
+import {formString} from "@/lib/utils";
 
 export default function ComplaintForm() {
     const [pending, setPending] = useState(false);
@@ -18,9 +19,9 @@ export default function ComplaintForm() {
             action={async (formData) => {
                 setPending(true);
                 const result = await submitPublicComplaint({
-                    phone: String(formData.get("phone") || ""),
-                    issue: String(formData.get("issue") || ""),
-                    complaintType: String(formData.get("complaintType") || "Service quality"),
+                    phone: formString(formData, "phone"),
+                    issue: formString(formData, "issue"),
+                    complaintType: formString(formData, "complaintType", "Service quality"),
                 });
                 setPending(false);
                 if (!result.ok) {

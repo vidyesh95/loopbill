@@ -5,6 +5,7 @@ import {toast} from "sonner";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {rescheduleService} from "@/lib/actions/ops";
+import {formString} from "@/lib/utils";
 
 type QueueItem = {
     id: number;
@@ -46,8 +47,8 @@ export default function RescheduleClient({
                         }
                         const result = await rescheduleService({
                             serviceId: item.serviceId,
-                            date: String(formData.get("date") || ""),
-                            agentId: String(formData.get("agentId") || "") || undefined,
+                            date: formString(formData, "date"),
+                            agentId: formString(formData, "agentId") || undefined,
                         });
                         if (!result.ok) {
                             toast.error(result.error);

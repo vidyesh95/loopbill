@@ -6,6 +6,7 @@ import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
 import {completeAssignedService, reportCustomerAbsence, uploadServiceProof} from "@/lib/actions/agent";
 import type {JobRecord} from "@/lib/db/queries-staff";
+import {formString} from "@/lib/utils";
 
 export default function JobClient({job}: {job: JobRecord}) {
     const router = useRouter();
@@ -54,7 +55,7 @@ export default function JobClient({job}: {job: JobRecord}) {
                 action={async (formData) => {
                     const result = await completeAssignedService({
                         serviceId: job.id,
-                        notes: String(formData.get("notes") || ""),
+                        notes: formString(formData, "notes"),
                     });
                     if (!result.ok) {
                         toast.error(result.error);
@@ -71,7 +72,7 @@ export default function JobClient({job}: {job: JobRecord}) {
             </form>
             <form
                 action={async (formData) => {
-                    const result = await reportCustomerAbsence(job.id, String(formData.get("reason") || "Customer not present"));
+                    const result = await reportCustomerAbsence(job.id, formString(formData, "reason", "Customer not present"));
                     if (!result.ok) {
                         toast.error(result.error);
                         return;

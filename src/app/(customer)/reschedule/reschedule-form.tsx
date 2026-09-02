@@ -7,6 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import {submitPublicReschedule} from "@/lib/actions/public";
+import {formString} from "@/lib/utils";
 
 export default function RescheduleForm() {
     const [pending, setPending] = useState(false);
@@ -17,9 +18,9 @@ export default function RescheduleForm() {
             action={async (formData) => {
                 setPending(true);
                 const result = await submitPublicReschedule({
-                    phone: String(formData.get("phone") || ""),
-                    requestedDate: String(formData.get("requestedDate") || ""),
-                    reason: String(formData.get("reason") || ""),
+                    phone: formString(formData, "phone"),
+                    requestedDate: formString(formData, "requestedDate"),
+                    reason: formString(formData, "reason"),
                 });
                 setPending(false);
                 if (!result.ok) {

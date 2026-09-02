@@ -10,6 +10,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {createComplaint, createContract, scheduleService, sendManualNotification, upsertCustomer} from "@/lib/actions/ops";
 import {COMPLAINT_PRIORITIES, COMPLAINT_TYPES, PAYMENT_FREQUENCIES, PAYMENT_STATUSES} from "@/lib/data/status";
+import {formString} from "@/lib/utils";
 
 export type LookupCustomer = {id: number; name: string; phone?: string | null};
 export type LookupAgent = {id: string; name: string};
@@ -35,11 +36,11 @@ export function ScheduleServiceDialog({
         setPending(true);
         const result = await scheduleService({
             customerId: Number(formData.get("customerId")),
-            serviceType: String(formData.get("serviceType") || ""),
-            date: String(formData.get("date") || ""),
-            agentId: String(formData.get("agentId") || "") || undefined,
+            serviceType: formString(formData, "serviceType"),
+            date: formString(formData, "date"),
+            agentId: formString(formData, "agentId") || undefined,
             serviceNumber: Number(formData.get("serviceNumber") || 1),
-            notes: String(formData.get("notes") || "") || undefined,
+            notes: formString(formData, "notes") || undefined,
             override: allowOverride && formData.get("override") === "on",
         });
         setPending(false);
@@ -141,14 +142,14 @@ export function CustomerDialog({
         const result = await upsertCustomer({
             id: initial?.id,
             locationId: initial?.locationId,
-            name: String(formData.get("name") || ""),
-            phone: String(formData.get("phone") || ""),
-            email: String(formData.get("email") || ""),
-            label: String(formData.get("label") || ""),
-            address: String(formData.get("address") || ""),
-            building: String(formData.get("building") || ""),
-            wing: String(formData.get("wing") || ""),
-            flatNo: String(formData.get("flatNo") || ""),
+            name: formString(formData, "name"),
+            phone: formString(formData, "phone"),
+            email: formString(formData, "email"),
+            label: formString(formData, "label"),
+            address: formString(formData, "address"),
+            building: formString(formData, "building"),
+            wing: formString(formData, "wing"),
+            flatNo: formString(formData, "flatNo"),
         });
         setPending(false);
         if (!result.ok) {
@@ -224,9 +225,9 @@ export function ComplaintDialog({
         const result = await createComplaint({
             customerId: Number(formData.get("customerId")),
             serviceId: Number(formData.get("serviceId")),
-            complaintType: String(formData.get("complaintType") || "Service quality"),
-            priority: String(formData.get("priority") || "Normal"),
-            issue: String(formData.get("issue") || ""),
+            complaintType: formString(formData, "complaintType", "Service quality"),
+            priority: formString(formData, "priority", "Normal"),
+            issue: formString(formData, "issue"),
         });
         setPending(false);
         if (!result.ok) {
@@ -311,13 +312,13 @@ export function ContractDialog({
         const result = await createContract({
             customerId: Number(formData.get("customerId")),
             packageId: Number(formData.get("packageId")) || undefined,
-            serviceType: String(formData.get("serviceType") || ""),
+            serviceType: formString(formData, "serviceType"),
             contractValue: Number(formData.get("contractValue") || 0),
-            paymentStatus: String(formData.get("paymentStatus") || "Pending"),
-            paymentFrequency: String(formData.get("paymentFrequency") || "Quarterly"),
-            nextPayment: String(formData.get("nextPayment") || ""),
-            contractDate: String(formData.get("contractDate") || ""),
-            expiryDate: String(formData.get("expiryDate") || ""),
+            paymentStatus: formString(formData, "paymentStatus", "Pending"),
+            paymentFrequency: formString(formData, "paymentFrequency", "Quarterly"),
+            nextPayment: formString(formData, "nextPayment"),
+            contractDate: formString(formData, "contractDate"),
+            expiryDate: formString(formData, "expiryDate"),
         });
         setPending(false);
         if (!result.ok) {
@@ -413,9 +414,9 @@ export function NotificationDialog({
             "Email" | "SMS" | "WhatsApp" | "Push"
         >;
         const result = await sendManualNotification({
-            subject: String(formData.get("subject") || ""),
-            recipients: String(formData.get("recipients") || ""),
-            type: String(formData.get("type") || "Service Reminder"),
+            subject: formString(formData, "subject"),
+            recipients: formString(formData, "recipients"),
+            type: formString(formData, "type", "Service Reminder"),
             methods: methods.length ? methods : ["WhatsApp", "SMS"],
         });
         setPending(false);

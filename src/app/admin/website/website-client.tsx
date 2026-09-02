@@ -7,6 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {upsertSiteContent, upsertSitePricing, upsertSiteService} from "@/lib/actions/cms";
+import {formString} from "@/lib/utils";
 
 type ServiceRow = {
     id: number;
@@ -63,11 +64,11 @@ export default function WebsiteClient({
                             action={async (formData) => {
                                 const result = await upsertSiteService({
                                     id: item.id,
-                                    slug: String(formData.get("slug") || item.slug),
-                                    title: String(formData.get("title") || ""),
+                                    slug: formString(formData, "slug", item.slug),
+                                    title: formString(formData, "title"),
                                     category: (formData.get("category") === "other" ? "other" : "pest"),
-                                    summary: String(formData.get("summary") || ""),
-                                    details: String(formData.get("details") || "")
+                                    summary: formString(formData, "summary"),
+                                    details: formString(formData, "details")
                                         .split("\n")
                                         .map((line) => line.trim())
                                         .filter(Boolean),
@@ -111,7 +112,7 @@ export default function WebsiteClient({
                                 const result = await upsertSitePricing({
                                     id: item.id,
                                     slug: item.slug,
-                                    label: String(formData.get("label") || item.label),
+                                    label: formString(formData, "label", item.label),
                                     residentialBase: Number(formData.get("residentialBase") || 0),
                                     commercialPerSqft: Number(formData.get("commercialPerSqft") || 0),
                                 });
@@ -135,9 +136,9 @@ export default function WebsiteClient({
                         className="max-w-2xl space-y-2"
                         action={async (formData) => {
                             await upsertSiteContent("hero", {
-                                eyebrow: String(formData.get("eyebrow") || ""),
-                                title: String(formData.get("title") || ""),
-                                body: String(formData.get("body") || ""),
+                                eyebrow: formString(formData, "eyebrow"),
+                                title: formString(formData, "title"),
+                                body: formString(formData, "body"),
                             });
                             toast.success("Hero saved");
                             router.refresh();
@@ -153,8 +154,8 @@ export default function WebsiteClient({
                         className="max-w-2xl space-y-2"
                         action={async (formData) => {
                             await upsertSiteContent("about", {
-                                title: String(formData.get("title") || ""),
-                                body: String(formData.get("body") || ""),
+                                title: formString(formData, "title"),
+                                body: formString(formData, "body"),
                             });
                             toast.success("About saved");
                             router.refresh();
@@ -168,7 +169,7 @@ export default function WebsiteClient({
                     <form
                         className="max-w-2xl space-y-2"
                         action={async (formData) => {
-                            await upsertSiteContent("terms", String(formData.get("terms") || ""));
+                            await upsertSiteContent("terms", formString(formData, "terms"));
                             toast.success("Terms saved");
                             router.refresh();
                         }}

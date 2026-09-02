@@ -12,6 +12,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {assignRedo, attendComplaint, resolveComplaint} from "@/lib/actions/ops";
 import type {ComplaintRow} from "@/lib/data/types";
+import {formString} from "@/lib/utils";
 
 export default function ComplaintsClient({
     complaints,
@@ -98,8 +99,8 @@ export default function ComplaintsClient({
                             }
                             const result = await assignRedo({
                                 complaintId: redoId,
-                                agentId: String(formData.get("agentId") || ""),
-                                date: String(formData.get("date") || ""),
+                                agentId: formString(formData, "agentId"),
+                                date: formString(formData, "date"),
                                 override: formData.get("override") === "on",
                             });
                             if (!result.ok) {

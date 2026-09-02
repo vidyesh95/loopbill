@@ -9,6 +9,7 @@ import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {runDailyJobsAction, updateAppSettings, updateCompanySettings} from "@/lib/actions/settings";
+import {formString} from "@/lib/utils";
 
 type Branch = {id?: number; name: string; address: string};
 
@@ -45,10 +46,10 @@ export default function SettingsClient({
                         className="max-w-2xl space-y-3"
                         action={async (formData) => {
                             const result = await updateCompanySettings({
-                                name: String(formData.get("name") || ""),
-                                address: String(formData.get("address") || ""),
-                                email: String(formData.get("email") || ""),
-                                phone: String(formData.get("phone") || ""),
+                                name: formString(formData, "name"),
+                                address: formString(formData, "address"),
+                                email: formString(formData, "email"),
+                                phone: formString(formData, "phone"),
                                 branches: localBranches,
                             });
                             if (!result.ok) {
@@ -115,7 +116,7 @@ export default function SettingsClient({
                             const result = await updateAppSettings({
                                 remindersEnabled: formData.get("remindersEnabled") === "on",
                                 maxReschedules: Number(formData.get("maxReschedules") || 2),
-                                officeHours: String(formData.get("officeHours") || ""),
+                                officeHours: formString(formData, "officeHours"),
                             });
                             if (!result.ok) {
                                 toast.error(result.error);
