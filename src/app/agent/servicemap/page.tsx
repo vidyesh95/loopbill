@@ -1,8 +1,6 @@
-import dynamic from "next/dynamic";
+import { JobMapLoader } from "@/components/agent/job-map-loader";
 import { requireRole } from "@/lib/session";
 import { getJobs } from "@/lib/db/queries-staff";
-
-const JobMap = dynamic(() => import("@/components/agent/job-map"), { ssr: false });
 
 export default async function AgentMap() {
   const session = await requireRole(["agent"]);
@@ -20,7 +18,7 @@ export default async function AgentMap() {
           OpenStreetMap pins for jobs with saved coordinates. Save a customer address to geocode it.
         </p>
       </div>
-      <JobMap
+      <JobMapLoader
         jobs={jobs.map((job) => ({
           id: job.id,
           customer: job.customer,
