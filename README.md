@@ -12,9 +12,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 Put Turso credentials in `.env` (`TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`) and keep `BETTER_AUTH_URL=http://localhost:3000`. Then migrate, seed, and start the app on port 3000:
 
 ```bash
-npm run db:migrate
-npm run db:seed
-npm run dev
+pnpm db:migrate
+pnpm db:seed
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and sign in as:
@@ -45,9 +45,9 @@ Then set these in `.env` locally and on the Vercel project:
 Apply schema and seed against whichever URL is in the env file:
 
 ```bash
-npm run db:generate
-npm run db:migrate
-npm run db:seed
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
 ```
 
 `db:seed` is idempotent (wipe and reseed). Extra demo rows are generated with a fixed RNG so they stay the same each run.
