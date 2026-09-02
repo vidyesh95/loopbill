@@ -80,7 +80,7 @@ export default function NotificationAnalytics({
           <CardTitle>By type</CardTitle>
           <CardDescription>Counts from the notification table</CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px]">
+        <CardContent className="h-75">
           <ChartContainer config={chartConfig} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={byType}>

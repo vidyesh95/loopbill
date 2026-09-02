@@ -54,7 +54,7 @@ export default function JobMap({ jobs }: { jobs: MapJob[] }) {
   const center = points[0] ?? [19.076, 72.8777];
 
   return (
-    <MapContainer center={center} zoom={11} className="h-[480px] w-full rounded-md border">
+    <MapContainer center={center} zoom={11} className="h-120 w-full rounded-md border">
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
