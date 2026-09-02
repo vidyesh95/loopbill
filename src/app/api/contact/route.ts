@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { db } from "@/lib/db";
 import { lead } from "@/lib/db/schema";
-import { COMPANY_EMAIL, getServiceBySlug } from "@/lib/data/services";
+import { getServiceBySlug } from "@/lib/data/services";
+import { getPublicCompany, getPublicServiceBySlug } from "@/lib/public-site";
 import { leadRequestSchema } from "@/lib/leads";
 
 function smtpConfigured() {
@@ -33,7 +34,11 @@ export async function POST(req: NextRequest) {
   const data = parsed.data;
 
   const name = `${data.firstName} ${data.lastName}`.replace(/\s+/g, " ").trim();
-  const serviceTitle = getServiceBySlug(data.service)?.title ?? data.service;
+  const [company, published] = await Promise.all([
+    getPublicCompany(),
+    getPublicServiceBySlug(data.service),
+  ]);
+  const serviceTitle = published?.title ?? getServiceBySlug(data.service)?.title ?? data.service;
 
   try {
     await db.insert(lead).values({
@@ -87,7 +92,7 @@ ${data.message}
 
     await transporter.sendMail({
       from: `"Website Contact" <${process.env.SMTP_USER}>`,
-      to: COMPANY_EMAIL,
+      to: company.email,
       replyTo: data.email,
       subject: `New website enquiry — ${serviceTitle}`,
       text: textContent,

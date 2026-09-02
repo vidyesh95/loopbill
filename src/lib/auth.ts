@@ -91,4 +91,4 @@ export const auth = betterAuth({
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type UserRole = "admin" | "salesperson" | "agent";
+export type UserRole = "admin" | "salesperson" | "agent" | "customer";

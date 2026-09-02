@@ -12,9 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { OTHER_SERVICES, PEST_SERVICES } from "@/lib/data/services";
+import { usePublishedServices } from "@/components/customer/public-site-context";
 
 export function EnquiryForm({ source = "home-enquiry" }: { source?: string }) {
+  const services = usePublishedServices();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -28,8 +29,7 @@ export function EnquiryForm({ source = "home-enquiry" }: { source?: string }) {
     const parts = name.trim().split(/\s+/);
     const firstName = parts[0] ?? "";
     const lastName = parts.slice(1).join(" ") || "Enquiry";
-    const serviceTitle =
-      [...PEST_SERVICES, ...OTHER_SERVICES].find((item) => item.slug === service)?.title ?? service;
+    const serviceTitle = services.find((item) => item.slug === service)?.title ?? service;
 
     try {
       const res = await fetch("/api/contact", {
@@ -72,12 +72,7 @@ export function EnquiryForm({ source = "home-enquiry" }: { source?: string }) {
             <SelectValue placeholder="Select your service" />
           </SelectTrigger>
           <SelectContent>
-            {PEST_SERVICES.map((item) => (
-              <SelectItem key={item.slug} value={item.slug}>
-                {item.title}
-              </SelectItem>
-            ))}
-            {OTHER_SERVICES.map((item) => (
+            {services.map((item) => (
               <SelectItem key={item.slug} value={item.slug}>
                 {item.title}
               </SelectItem>

@@ -13,6 +13,7 @@ function revalidateSite() {
   revalidatePath("/commercial");
   revalidatePath("/terms");
   revalidatePath("/admin/website");
+  revalidatePath("/admin/settings");
 }
 
 export async function upsertSiteService(input: {

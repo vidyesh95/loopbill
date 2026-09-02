@@ -56,6 +56,7 @@ export default function ServicesClient({
         isOpen={isCalendarViewOpen}
         onClose={() => setIsCalendarViewOpen(false)}
         services={services}
+        allowOverride
       />
     </main>
   );

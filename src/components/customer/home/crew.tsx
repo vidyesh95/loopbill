@@ -1,17 +1,19 @@
+"use client";
+
 import Image from "next/image";
 import { QuoteDialog } from "@/components/customer/quote-dialog";
+import { usePublicCompany } from "@/components/customer/public-site-context";
 
 export function Crew() {
+  const { crew } = usePublicCompany();
   return (
     <section className="bg-[oklch(0.96_0.01_95)] px-4 py-24 md:py-32">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-medium tracking-[0.22em] text-primary uppercase">On site</p>
+        <p className="text-xs font-medium tracking-[0.22em] text-primary uppercase">{crew.eyebrow}</p>
         <h2 className="mt-4 font-display text-4xl tracking-tight text-foreground md:text-5xl">
-          The crew that walks the site
+          {crew.title}
         </h2>
-        <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-          Inspect, treat, and leave the rooms usable. No extra equipment in the hallway.
-        </p>
+        <p className="mx-auto mt-4 max-w-md text-muted-foreground">{crew.body}</p>
         <QuoteDialog
           defaultSource="crew"
           trigger={

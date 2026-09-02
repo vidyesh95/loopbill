@@ -8,5 +8,8 @@ export function homeForRole(role: string | undefined) {
   if (role === "agent") {
     return "/agent";
   }
+  if (role === "customer") {
+    return "/account";
+  }
   return "/signin";
 }

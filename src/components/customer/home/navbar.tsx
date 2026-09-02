@@ -19,9 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { COMPANY_PHONES, OTHER_SERVICES, PEST_SERVICES, whatsappUrl } from "@/lib/data/services";
-
-const primaryPhone = COMPANY_PHONES[1];
+import { whatsappUrl } from "@/lib/data/services";
+import { usePublicCompany, usePublishedServices, usePublicSite } from "@/components/customer/public-site-context";
 
 const links = [
   { href: "/residential", label: "Residential" },
@@ -32,6 +31,12 @@ const links = [
 ];
 
 export default function Navbar() {
+  const company = usePublicCompany();
+  const services = usePublishedServices();
+  const { accountHref } = usePublicSite();
+  const pest = services.filter((item) => item.category === "pest");
+  const other = services.filter((item) => item.category === "other");
+  const primaryPhone = company.phones[1] ?? company.phones[0];
   return (
     <header className="sticky top-0 z-50">
       <div className="bg-primary text-primary-foreground">
@@ -47,7 +52,12 @@ export default function Navbar() {
             <Link href="/commercial" className="hidden hover:opacity-90 sm:inline">
               Commercial
             </Link>
-            <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="hover:opacity-90">
+            <a
+              href={whatsappUrl(undefined, company.whatsappNumber)}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:opacity-90"
+            >
               WhatsApp
             </a>
           </div>
@@ -83,7 +93,7 @@ export default function Navbar() {
                   <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                     Pest control
                   </p>
-                  {PEST_SERVICES.map((service) => (
+                  {pest.map((service) => (
                     <SheetClose asChild key={service.slug}>
                       <Link
                         href={`/services/${service.slug}`}
@@ -96,7 +106,7 @@ export default function Navbar() {
                   <p className="pt-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                     Other
                   </p>
-                  {OTHER_SERVICES.map((service) => (
+                  {other.map((service) => (
                     <SheetClose asChild key={service.slug}>
                       <Link
                         href={`/services/${service.slug}`}
@@ -112,7 +122,7 @@ export default function Navbar() {
           </Sheet>
 
           <Link href="/" className="font-display text-xl tracking-tight text-primary md:text-2xl">
-            Urban Pest Master
+            {company.name.replace("Private Limited", "").trim() || "Urban Pest Master"}
           </Link>
 
           <nav className="hidden items-center gap-7 md:flex">
@@ -126,14 +136,14 @@ export default function Navbar() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Pest control</DropdownMenuLabel>
-                {PEST_SERVICES.map((service) => (
+                {pest.map((service) => (
                   <DropdownMenuItem key={service.slug} asChild>
                     <Link href={`/services/${service.slug}`}>{service.title}</Link>
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Other services</DropdownMenuLabel>
-                {OTHER_SERVICES.map((service) => (
+                {other.map((service) => (
                   <DropdownMenuItem key={service.slug} asChild>
                     <Link href={`/services/${service.slug}`}>{service.title}</Link>
                   </DropdownMenuItem>
@@ -148,9 +158,18 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <Button asChild className="btn-primary hidden sm:inline-flex">
-            <a href={whatsappUrl("I want to book a pest control service.")}>Get a quote</a>
-          </Button>
+          <div className="hidden items-center gap-3 sm:flex">
+            <Button asChild variant="ghost" size="sm">
+              <Link href={accountHref === "/account" ? "/account" : "/signin"}>
+                {accountHref === "/account" ? "Account" : "Sign in"}
+              </Link>
+            </Button>
+            <Button asChild className="btn-primary">
+              <a href={whatsappUrl("I want to book a pest control service.", company.whatsappNumber)}>
+                Get a quote
+              </a>
+            </Button>
+          </div>
         </div>
       </nav>
     </header>

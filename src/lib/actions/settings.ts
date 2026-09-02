@@ -65,12 +65,20 @@ export async function updateAppSettings(input: {
   remindersEnabled: boolean;
   maxReschedules: number;
   officeHours: string;
+  channelEmail?: boolean;
+  channelSms?: boolean;
+  channelWhatsapp?: boolean;
+  channelPush?: boolean;
 }): Promise<ActionResult> {
   await requireActionRole(["admin"]);
   await setSettings({
     remindersEnabled: String(input.remindersEnabled),
     maxReschedules: String(input.maxReschedules),
     officeHours: input.officeHours,
+    channelEmail: String(input.channelEmail ?? true),
+    channelSms: String(input.channelSms ?? true),
+    channelWhatsapp: String(input.channelWhatsapp ?? true),
+    channelPush: String(input.channelPush ?? false),
   });
   revalidatePath("/admin/settings");
   return okEmpty();

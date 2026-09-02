@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import type { ComponentType } from "react";
 import { Button } from "@/components/ui/button";
 import { QuoteDialog } from "@/components/customer/quote-dialog";
+import { usePublishedServices } from "@/components/customer/public-site-context";
 import {
   BedbugIcon,
   BirdProofingIcon,
@@ -14,7 +17,6 @@ import {
   WoodBorerIcon,
 } from "@/components/icons/service-icons";
 import { isPricedServiceSlug } from "@/lib/data/pricing";
-import { OTHER_SERVICES, PEST_SERVICES } from "@/lib/data/services";
 
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   bedbug: BedbugIcon,
@@ -62,6 +64,9 @@ function ServiceCard({ slug, title, summary }: { slug: string; title: string; su
 }
 
 export function ServiceCatalog() {
+  const services = usePublishedServices();
+  const pest = services.filter((item) => item.category === "pest");
+  const other = services.filter((item) => item.category === "other");
   return (
     <section id="services" className="bg-[oklch(0.99_0.008_95)] py-20">
       <header className="mx-auto mb-12 max-w-2xl px-4 text-center">
@@ -77,7 +82,7 @@ export function ServiceCatalog() {
           Pest control
         </h3>
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {PEST_SERVICES.map((service) => (
+          {pest.map((service) => (
             <ServiceCard key={service.slug} {...service} />
           ))}
         </ul>
@@ -86,7 +91,7 @@ export function ServiceCatalog() {
           Other services
         </h3>
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {OTHER_SERVICES.map((service) => (
+          {other.map((service) => (
             <ServiceCard key={service.slug} {...service} />
           ))}
         </ul>

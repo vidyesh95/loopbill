@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { provisionCustomerLogin } from "@/lib/actions/portal";
+import { formString } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -14,8 +25,10 @@ import { CustomerDialog } from "@/components/staff/staff-forms";
 import type { CustomerRecord } from "@/lib/db/queries-staff";
 
 export default function CustomersClient({ customers }: { customers: CustomerRecord[] }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<CustomerRecord | undefined>();
+  const [portalFor, setPortalFor] = useState<CustomerRecord | undefined>();
 
   return (
     <main className="flex flex-col gap-4">
@@ -52,16 +65,25 @@ export default function CustomersClient({ customers }: { customers: CustomerReco
                 <div className="text-xs text-muted-foreground">{item.address}</div>
               </TableCell>
               <TableCell>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setEditing(item);
-                    setOpen(true);
-                  }}
-                >
-                  Edit
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditing(item);
+                      setOpen(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                  {item.userId ? (
+                    <span className="text-xs text-muted-foreground">Portal on</span>
+                  ) : (
+                    <Button size="sm" variant="ghost" onClick={() => setPortalFor(item)}>
+                      Portal login
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -87,6 +109,39 @@ export default function CustomersClient({ customers }: { customers: CustomerReco
             : undefined
         }
       />
+      <Dialog open={Boolean(portalFor)} onOpenChange={(value) => !value && setPortalFor(undefined)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Portal login for {portalFor?.name}</DialogTitle>
+          </DialogHeader>
+          <form
+            className="space-y-3"
+            action={async (formData) => {
+              if (!portalFor) {
+                return;
+              }
+              const result = await provisionCustomerLogin({
+                customerId: portalFor.id,
+                email: formString(formData, "email", portalFor.email),
+                password: formString(formData, "password"),
+              });
+              if (!result.ok) {
+                toast.error(result.error);
+                return;
+              }
+              toast.success("Portal login created");
+              setPortalFor(undefined);
+              router.refresh();
+            }}
+          >
+            <Input name="email" type="email" defaultValue={portalFor?.email} required />
+            <Input name="password" type="password" minLength={8} required placeholder="Password" />
+            <Button type="submit" className="w-full">
+              Create login
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

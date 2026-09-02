@@ -48,6 +48,19 @@ export default function WebsiteClient({
   const contentMap = Object.fromEntries(content.map((row) => [row.key, row.value]));
   const hero = safeJson(contentMap.hero, { eyebrow: "", title: "", body: "" });
   const about = safeJson(contentMap.about, { title: "", body: "" });
+  const features = safeJson(contentMap.features, {
+    eyebrow: "",
+    title: "",
+    items: [
+      { title: "", description: "" },
+      { title: "", description: "" },
+      { title: "", description: "" },
+    ],
+  });
+  const crew = safeJson(contentMap.crew, { eyebrow: "", title: "", body: "" });
+  const faq = safeJson(contentMap.faq, [{ question: "", answer: "" }]);
+  const stats = safeJson(contentMap.stats, [{ value: "", label: "" }]);
+  const stations = safeJson(contentMap.stations, [{ region: "", stations: [] as string[] }]);
 
   return (
     <main className="flex w-full flex-col gap-4">
@@ -190,6 +203,164 @@ export default function WebsiteClient({
             <h2 className="font-semibold">Terms</h2>
             <Textarea name="terms" defaultValue={contentMap.terms ?? ""} rows={6} />
             <Button type="submit">Save terms</Button>
+          </form>
+          <form
+            className="max-w-2xl space-y-2"
+            action={async (formData) => {
+              await upsertSiteContent("features", {
+                eyebrow: formString(formData, "eyebrow"),
+                title: formString(formData, "title"),
+                items: [0, 1, 2].map((index) => ({
+                  title: formString(formData, `itemTitle${index}`),
+                  description: formString(formData, `itemBody${index}`),
+                })),
+              });
+              toast.success("Features saved");
+              router.refresh();
+            }}
+          >
+            <h2 className="font-semibold">Features</h2>
+            <Input name="eyebrow" defaultValue={features.eyebrow} />
+            <Input name="title" defaultValue={features.title} />
+            {[0, 1, 2].map((index) => {
+              const item = features.items[index] ?? { title: "", description: "" };
+              return (
+                <div key={index} className="grid gap-2">
+                  <Input name={`itemTitle${index}`} defaultValue={item.title} placeholder="Title" />
+                  <Textarea
+                    name={`itemBody${index}`}
+                    defaultValue={item.description}
+                    placeholder="Description"
+                  />
+                </div>
+              );
+            })}
+            <Button type="submit">Save features</Button>
+          </form>
+          <form
+            className="max-w-2xl space-y-2"
+            action={async (formData) => {
+              await upsertSiteContent("crew", {
+                eyebrow: formString(formData, "eyebrow"),
+                title: formString(formData, "title"),
+                body: formString(formData, "body"),
+              });
+              toast.success("Crew saved");
+              router.refresh();
+            }}
+          >
+            <h2 className="font-semibold">Crew</h2>
+            <Input name="eyebrow" defaultValue={crew.eyebrow} />
+            <Input name="title" defaultValue={crew.title} />
+            <Textarea name="body" defaultValue={crew.body} />
+            <Button type="submit">Save crew</Button>
+          </form>
+          <form
+            className="max-w-2xl space-y-2"
+            action={async (formData) => {
+              await upsertSiteContent(
+                "faq",
+                formString(formData, "faq")
+                  .split("\n\n")
+                  .map((block) => {
+                    const [question, ...rest] = block.split("\n");
+                    return { question: question?.trim() ?? "", answer: rest.join(" ").trim() };
+                  })
+                  .filter((item) => item.question),
+              );
+              toast.success("FAQ saved");
+              router.refresh();
+            }}
+          >
+            <h2 className="font-semibold">FAQ</h2>
+            <p className="text-xs text-muted-foreground">
+              One question per block. First line is the question, following lines are the answer.
+              Separate items with a blank line.
+            </p>
+            <Textarea
+              name="faq"
+              rows={10}
+              defaultValue={faq.map((item) => `${item.question}\n${item.answer}`).join("\n\n")}
+            />
+            <Button type="submit">Save FAQ</Button>
+          </form>
+          <form
+            className="max-w-2xl space-y-2"
+            action={async (formData) => {
+              await upsertSiteContent("hours", formString(formData, "hours"));
+              await upsertSiteContent("whatsappNumber", formString(formData, "whatsappNumber"));
+              toast.success("Contact extras saved");
+              router.refresh();
+            }}
+          >
+            <h2 className="font-semibold">Hours and WhatsApp</h2>
+            <Input name="hours" defaultValue={contentMap.hours ?? ""} />
+            <Input name="whatsappNumber" defaultValue={contentMap.whatsappNumber ?? ""} />
+            <Button type="submit">Save</Button>
+          </form>
+          <form
+            className="max-w-2xl space-y-2"
+            action={async (formData) => {
+              await upsertSiteContent(
+                "stats",
+                formString(formData, "stats")
+                  .split("\n")
+                  .map((line) => {
+                    const [value, ...label] = line.split("|");
+                    return { value: value?.trim() ?? "", label: label.join("|").trim() };
+                  })
+                  .filter((item) => item.value),
+              );
+              toast.success("Stats saved");
+              router.refresh();
+            }}
+          >
+            <h2 className="font-semibold">Stats</h2>
+            <p className="text-xs text-muted-foreground">One per line: value|label</p>
+            <Textarea
+              name="stats"
+              rows={4}
+              defaultValue={stats.map((item) => `${item.value}|${item.label}`).join("\n")}
+            />
+            <Button type="submit">Save stats</Button>
+          </form>
+          <form
+            className="max-w-2xl space-y-2"
+            action={async (formData) => {
+              await upsertSiteContent(
+                "stations",
+                formString(formData, "stations")
+                  .split("\n\n")
+                  .map((block) => {
+                    const [region, ...rest] = block.split("\n");
+                    return {
+                      region: region?.trim() ?? "",
+                      stations: rest
+                        .join(",")
+                        .split(/[·,]/)
+                        .map((item) => item.trim())
+                        .filter(Boolean),
+                    };
+                  })
+                  .filter((item) => item.region),
+              );
+              toast.success("Stations saved");
+              router.refresh();
+            }}
+          >
+            <h2 className="font-semibold">Service stations</h2>
+            <p className="text-xs text-muted-foreground">
+              First line is the region. Next line is stations separated by commas. Blank line between
+              regions.
+            </p>
+            <Textarea
+              name="stations"
+              rows={10}
+              defaultValue={stations
+                .map((item) => `${item.region}\n${item.stations.join(", ")}`)
+                .join("\n\n")}
+            />
+            <Button type="submit">Save stations</Button>
           </form>
         </TabsContent>
       </Tabs>

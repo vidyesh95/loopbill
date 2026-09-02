@@ -1,33 +1,18 @@
-import Link from "next/link";
+"use client";
 
-const reasons = [
-  {
-    title: "Two rate cards, one crew",
-    description:
-      "Homes pay by BHK. Offices and kitchens pay by square feet. Both can choose One Time, 1 Year, or 2 Year.",
-  },
-  {
-    title: "The pests Mumbai actually has",
-    description:
-      "Bedbug, cockroach, mosquito, rodent, termite, and wood borer — plus invisible grill, bird proofing, and rat guard.",
-  },
-  {
-    title: "Book the way you already talk",
-    description:
-      "Call +91 86001 39094, send a WhatsApp, or leave a quote. We confirm the visit before anyone arrives.",
-  },
-];
+import Link from "next/link";
+import { usePublicCompany } from "@/components/customer/public-site-context";
 
 export default function Features() {
+  const { features } = usePublicCompany();
+  const reasons = features.items;
   return (
     <section className="bg-[oklch(0.965_0.012_95)] py-20">
       <header className="mx-auto mb-12 max-w-2xl px-4 text-center">
         <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
-          Why Urban Pest Master
+          {features.eyebrow}
         </p>
-        <h2 className="mt-3 font-display text-3xl md:text-4xl">
-          Built around homes and AMCs, not monthly software plans
-        </h2>
+        <h2 className="mt-3 font-display text-3xl md:text-4xl">{features.title}</h2>
       </header>
 
       <ul className="mx-auto grid max-w-6xl gap-4 px-4 md:grid-cols-3">

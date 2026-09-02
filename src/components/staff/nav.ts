@@ -9,6 +9,7 @@ import {
   MapPin,
   ReceiptText,
   Settings,
+  Wallet,
   ShieldCheck,
   TriangleAlert,
   UserRound,
@@ -30,6 +31,7 @@ export const staffNav: Record<UserRole, StaffNavItem[]> = {
     { label: "Reports", href: "/admin/reports", icon: ChartSpline },
     { label: "Complaints", href: "/admin/complaints", icon: TriangleAlert },
     { label: "Contracts", href: "/admin/contracts", icon: ReceiptText },
+    { label: "Billing", href: "/admin/billing", icon: Wallet },
     { label: "User management", href: "/admin/user-management", icon: UserRoundCog },
     { label: "Leads", href: "/admin/leads", icon: Inbox },
     { label: "Website", href: "/admin/website", icon: Globe },
@@ -50,5 +52,12 @@ export const staffNav: Record<UserRole, StaffNavItem[]> = {
     { label: "Today", href: "/agent", icon: Home },
     { label: "Schedule", href: "/agent/schedule", icon: CalendarClock },
     { label: "Service map", href: "/agent/servicemap", icon: MapPin },
+  ],
+  customer: [
+    { label: "Account", href: "/account", icon: Home },
+    { label: "Contracts", href: "/account/contracts", icon: ReceiptText },
+    { label: "Services", href: "/account/services", icon: ShieldCheck },
+    { label: "Invoices", href: "/account/invoices", icon: Wallet },
+    { label: "Complaints", href: "/account/complaints", icon: TriangleAlert },
   ],
 };

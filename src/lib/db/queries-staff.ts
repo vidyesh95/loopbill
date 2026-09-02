@@ -19,6 +19,7 @@ export type CustomerRecord = {
   name: string;
   phone: string;
   email: string;
+  userId: string | null;
   salespersonId: string | null;
   salesperson: string;
   locationId: number | null;
@@ -43,6 +44,8 @@ export type JobRecord = {
   status: string;
   location: string;
   address: string;
+  lat: string | null;
+  lng: string | null;
   amount: number;
   serviceNumber: number;
   notes: string;
@@ -60,6 +63,7 @@ export async function getCustomers(salespersonId?: string): Promise<CustomerReco
       name: customer.name,
       phone: customer.phone,
       email: customer.email,
+      userId: customer.userId,
       salespersonId: customer.salespersonId,
       salesperson: user.name,
       locationId: location.id,
@@ -91,6 +95,7 @@ export async function getCustomers(salespersonId?: string): Promise<CustomerReco
       name: row.name,
       phone: row.phone ?? "",
       email: row.email ?? "",
+      userId: row.userId,
       salespersonId: row.salespersonId,
       salesperson: row.salesperson ?? "Unassigned",
       locationId: row.locationId,
@@ -128,6 +133,8 @@ function toJob(
     status: string;
     location: string | null;
     address: string | null;
+    lat: string | null;
+    lng: string | null;
     amount: number;
     serviceNumber: number;
     notes: string | null;
@@ -152,6 +159,8 @@ function toJob(
     status: row.status,
     location: row.location ?? "",
     address: row.address ?? row.location ?? "",
+    lat: row.lat,
+    lng: row.lng,
     amount: row.amount,
     serviceNumber: row.serviceNumber,
     notes: row.notes ?? "",
@@ -183,6 +192,8 @@ export async function getJobs(filter?: {
       status: service.status,
       location: location.label,
       address: location.address,
+      lat: location.lat,
+      lng: location.lng,
       amount: service.amount,
       serviceNumber: service.serviceNumber,
       notes: service.notes,

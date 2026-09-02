@@ -11,7 +11,10 @@ import {
   WHATSAPP_NUMBER,
   type ServiceOffering,
 } from "@/lib/data/services";
-import { PRICED_SERVICES } from "@/lib/data/pricing";
+import { PRICED_SERVICES, type PricedServiceRate } from "@/lib/data/pricing";
+import { DEFAULT_CREW, DEFAULT_FAQ, DEFAULT_FEATURES } from "@/lib/data/site-defaults";
+
+export { DEFAULT_CREW, DEFAULT_FAQ, DEFAULT_FEATURES };
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
   if (!value) {
@@ -51,7 +54,7 @@ export async function getPublicServiceBySlug(slug: string) {
   return services.find((item) => item.slug === slug);
 }
 
-export async function getPublicPricing() {
+export async function getPublicPricing(): Promise<PricedServiceRate[]> {
   try {
     const rows = await db.select().from(sitePricing);
     if (rows.length === 0) {
@@ -66,6 +69,34 @@ export async function getPublicPricing() {
   } catch {
     return [...PRICED_SERVICES];
   }
+}
+
+function fallbackCompany() {
+  return {
+    name: "UrbanPestMaster",
+    address: "",
+    email: COMPANY_EMAIL,
+    phone: COMPANY_PHONES[0].display,
+    phones: [...COMPANY_PHONES],
+    whatsappNumber: WHATSAPP_NUMBER,
+    branches: [...BRANCHES],
+    stats: [...COMPANY_STATS],
+    stations: [...SERVICE_STATIONS],
+    hours: "Mon–Sat 9:00 AM – 7:00 PM",
+    hero: {
+      eyebrow: "Mumbai to Palghar · by train or bus",
+      title: "Pest-free homes and businesses, on your terms.",
+      body: "Residential rates by BHK. Commercial rates by square feet.",
+    },
+    about: {
+      title: "Urban Pest Master Private Limited",
+      body: "Pest control for homes, societies, and commercial kitchens from Mumbai to Palghar.",
+    },
+    faq: [...DEFAULT_FAQ],
+    features: DEFAULT_FEATURES,
+    crew: DEFAULT_CREW,
+    terms: "",
+  };
 }
 
 export async function getPublicCompany() {
@@ -107,34 +138,26 @@ export async function getPublicCompany() {
         title: "Urban Pest Master Private Limited",
         body: "Pest control for homes, societies, and commercial kitchens from Mumbai to Palghar.",
       }),
-      faq: parseJson(map.faq, []),
+      faq: parseJson(map.faq, [...DEFAULT_FAQ]),
+      features: parseJson(map.features, DEFAULT_FEATURES),
+      crew: parseJson(map.crew, DEFAULT_CREW),
       terms: map.terms ?? "",
     };
   } catch {
-    return {
-      name: "UrbanPestMaster",
-      address: "",
-      email: COMPANY_EMAIL,
-      phone: COMPANY_PHONES[0].display,
-      phones: [...COMPANY_PHONES],
-      whatsappNumber: WHATSAPP_NUMBER,
-      branches: [...BRANCHES],
-      stats: [...COMPANY_STATS],
-      stations: [...SERVICE_STATIONS],
-      hours: "Mon–Sat 9:00 AM – 7:00 PM",
-      hero: {
-        eyebrow: "Mumbai to Palghar · by train or bus",
-        title: "Pest-free homes and businesses, on your terms.",
-        body: "Residential rates by BHK. Commercial rates by square feet.",
-      },
-      about: {
-        title: "Urban Pest Master Private Limited",
-        body: "Pest control for homes, societies, and commercial kitchens from Mumbai to Palghar.",
-      },
-      faq: [],
-      terms: "",
-    };
+    return fallbackCompany();
   }
+}
+
+export type PublicCompany = Awaited<ReturnType<typeof getPublicCompany>>;
+export type PublicPricing = PricedServiceRate[];
+
+export async function getPublicSite() {
+  const [company, services, pricing] = await Promise.all([
+    getPublicCompany(),
+    getPublishedServices(),
+    getPublicPricing(),
+  ]);
+  return { company, services, pricing };
 }
 
 export async function getCmsRows() {

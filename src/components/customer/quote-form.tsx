@@ -14,12 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  OTHER_SERVICES,
-  PEST_SERVICES,
-  PROPERTY_TYPES,
-  type PropertyType,
-} from "@/lib/data/services";
+import { PROPERTY_TYPES, type PropertyType } from "@/lib/data/services";
+import { usePublishedServices } from "@/components/customer/public-site-context";
 
 export type QuoteFormProps = {
   defaultService?: string;
@@ -55,6 +51,9 @@ export function QuoteForm({
   submitLabel = "Send Message",
   onSuccess,
 }: QuoteFormProps) {
+  const services = usePublishedServices();
+  const pest = services.filter((item) => item.category === "pest");
+  const other = services.filter((item) => item.category === "other");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -179,12 +178,12 @@ export function QuoteForm({
             <SelectValue placeholder="Select a service" />
           </SelectTrigger>
           <SelectContent>
-            {PEST_SERVICES.map((item) => (
+            {pest.map((item) => (
               <SelectItem key={item.slug} value={item.slug}>
                 {item.title}
               </SelectItem>
             ))}
-            {OTHER_SERVICES.map((item) => (
+            {other.map((item) => (
               <SelectItem key={item.slug} value={item.slug}>
                 {item.title}
               </SelectItem>

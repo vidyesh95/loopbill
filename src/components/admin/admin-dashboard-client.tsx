@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, Download } from "lucide-react";
+import { Calendar } from "lucide-react";
+import { ExportButtons } from "@/components/staff/export-buttons";
 import TopStatisticsCards from "@/components/admin/reports/top-statistics-cards";
 import UpcomingServices from "@/components/admin/upcoming-services";
 import RecentActivities from "@/components/admin/recent-activities";
@@ -58,10 +59,9 @@ export default function AdminDashboardClient({
           <p className="text-muted-foreground">Overview of UrbanPestMaster operations</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="cursor-pointer">
-            <Download />
-            Export report
-          </Button>
+          <ExportButtons
+            payload={{ stats, agentPerformance, complaintStatus, serviceTrends }}
+          />
           <Button
             type="button"
             variant="default"

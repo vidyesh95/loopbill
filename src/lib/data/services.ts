@@ -84,11 +84,12 @@ export const SERVICE_STATIONS = [
   },
 ] as const;
 
-export function whatsappUrl(message?: string) {
+export function whatsappUrl(message?: string, number = WHATSAPP_NUMBER) {
+  const base = `https://wa.me/${number}`;
   if (!message?.trim()) {
-    return WHATSAPP_URL;
+    return base;
   }
-  return `${WHATSAPP_URL}?text=${encodeURIComponent(message.trim())}`;
+  return `${base}?text=${encodeURIComponent(message.trim())}`;
 }
 
 export const SERVICES: ServiceOffering[] = [

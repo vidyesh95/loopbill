@@ -26,6 +26,7 @@ export function JobsTable({
           <TableHead>Date</TableHead>
           <TableHead>Agent</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Proofs</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -51,6 +52,18 @@ export function JobsTable({
             <TableCell>{job.date}</TableCell>
             <TableCell>{job.agent}</TableCell>
             <TableCell>{job.status}</TableCell>
+            <TableCell>
+              {job.proofs.length === 0 ? (
+                "—"
+              ) : (
+                <div className="flex gap-1">
+                  {job.proofs.slice(0, 3).map((url) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={url} src={url} alt="" className="size-8 rounded border object-cover" />
+                  ))}
+                </div>
+              )}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

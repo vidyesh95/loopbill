@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
 import TopStatisticsCards from "@/components/admin/reports/top-statistics-cards";
+import { ExportButtons } from "@/components/staff/export-buttons";
 import AgentPerformance from "@/components/admin/reports/agent-performance";
 import ComplaintStatusBreakdown from "@/components/admin/reports/complaint-status-breakdown";
 import ServiceTrends from "@/components/admin/reports/service-trends";
@@ -26,10 +25,9 @@ export default async function Reports() {
           <h1 className="text-2xl font-bold md:text-3xl">Reports</h1>
           <p className="text-muted-foreground">Overview of UrbanPestMaster operations</p>
         </div>
-        <Button className="cursor-pointer">
-          <Download />
-          Export report
-        </Button>
+        <ExportButtons
+          payload={{ stats, agentPerformance, complaintStatus, serviceTrends }}
+        />
       </div>
       <TopStatisticsCards stats={stats} />
       <hr />

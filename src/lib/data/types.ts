@@ -40,6 +40,7 @@ export interface ComplaintRow {
 
 export interface ContractRow {
   contractId: number;
+  customerId?: number;
   customerName: string;
   customerAddress: string;
   serviceType: string;
@@ -50,6 +51,7 @@ export interface ContractRow {
   expiryDate: string;
   status: string;
   paymentFrequency: string;
+  locked?: boolean;
 }
 
 export interface NotificationRow {
@@ -61,6 +63,20 @@ export interface NotificationRow {
   status: string;
   dateTime: string;
   actions: string;
+  message?: string | null;
+}
+
+export interface InvoiceRow {
+  id: number;
+  number: string;
+  customerName: string;
+  contractId: number | null;
+  amount: number;
+  status: string;
+  issuedAt: string;
+  dueAt: string;
+  paidAt: string;
+  notes: string | null;
 }
 
 export interface NotificationTemplateRow {

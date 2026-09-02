@@ -1,7 +1,5 @@
 "use server";
 
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -9,6 +7,7 @@ import { contract, customer, rescheduleRequest, service, serviceProof } from "@/
 import { fail, okEmpty, requireActionRole, type ActionResult } from "@/lib/actions/_guard";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { assertServiceDate } from "@/lib/lifecycle";
+import { storeProofFile } from "@/lib/storage/proof";
 
 function revalidateAgent() {
   revalidatePath("/agent");
@@ -148,12 +147,7 @@ export async function uploadServiceProof(
     return fail("This job is not assigned to you");
   }
 
-  const dir = path.join(process.cwd(), "public/uploads/proof");
-  await mkdir(dir, { recursive: true });
-  const ext = path.extname(file.name) || ".jpg";
-  const filename = `${serviceId}-${Date.now()}${ext}`;
-  await writeFile(path.join(dir, filename), Buffer.from(await file.arrayBuffer()));
-  const url = `/uploads/proof/${filename}`;
+  const url = await storeProofFile(file, serviceId);
 
   await db.insert(serviceProof).values({
     serviceId,

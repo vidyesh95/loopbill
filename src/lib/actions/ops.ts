@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { complaint, contract, customer, location, service } from "@/lib/db/schema";
+import { complaint, contract, customer, invoice, location, service } from "@/lib/db/schema";
 import { fail, ok, okEmpty, requireActionRole, type ActionResult } from "@/lib/actions/_guard";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 import {
@@ -26,6 +26,7 @@ import {
   canReschedule,
 } from "@/lib/lifecycle";
 import { getSettingNumber } from "@/lib/db/settings";
+import { geocodeAddress } from "@/lib/geo/nominatim";
 
 function revalidateOps() {
   revalidatePath("/admin");
@@ -84,6 +85,7 @@ export async function upsertCustomer(
   const salespersonId =
     parsed.data.salespersonId ?? (session.user.role === "salesperson" ? session.user.id : null);
   let customerId = parsed.data.id;
+  const coords = await geocodeAddress(parsed.data.address);
 
   if (customerId) {
     await db
@@ -104,6 +106,8 @@ export async function upsertCustomer(
           building: parsed.data.building,
           wing: parsed.data.wing,
           flatNo: parsed.data.flatNo,
+          lat: coords?.lat,
+          lng: coords?.lng,
         })
         .where(eq(location.id, parsed.data.locationId));
     } else {
@@ -114,6 +118,8 @@ export async function upsertCustomer(
         building: parsed.data.building,
         wing: parsed.data.wing,
         flatNo: parsed.data.flatNo,
+        lat: coords?.lat,
+        lng: coords?.lng,
       });
     }
   } else {
@@ -134,6 +140,8 @@ export async function upsertCustomer(
       building: parsed.data.building,
       wing: parsed.data.wing,
       flatNo: parsed.data.flatNo,
+      lat: coords?.lat,
+      lng: coords?.lng,
     });
   }
 
@@ -194,7 +202,32 @@ export async function createContract(input: {
     })
     .returning();
 
+  const issuedAt = new Date();
+  const due = new Date(issuedAt);
+  if (created.paymentFrequency === "Monthly") {
+    due.setMonth(due.getMonth() + 1);
+  } else if (created.paymentFrequency === "Quarterly") {
+    due.setMonth(due.getMonth() + 3);
+  } else if (created.paymentFrequency === "Half-yearly") {
+    due.setMonth(due.getMonth() + 6);
+  } else {
+    due.setFullYear(due.getFullYear() + 1);
+  }
+  const [countRow] = await db.select({ value: count() }).from(invoice);
+  await db.insert(invoice).values({
+    contractId: created.id,
+    customerId: created.customerId,
+    number: `INV-${String((countRow?.value ?? 0) + 1).padStart(5, "0")}`,
+    amount: created.contractValue,
+    status: created.paymentStatus === "Paid" ? "Paid" : "Issued",
+    issuedAt,
+    dueAt: due,
+    paidAt: created.paymentStatus === "Paid" ? issuedAt : null,
+    notes: created.serviceType,
+  });
+
   revalidateOps();
+  revalidatePath("/admin/billing");
   return ok({ id: created.id });
 }
 
@@ -207,7 +240,14 @@ export async function setContractLocked(id: number, locked: boolean): Promise<Ac
       status: locked ? "Expired" : "Active",
     })
     .where(eq(contract.id, id));
+  if (locked) {
+    await db
+      .update(invoice)
+      .set({ status: "Void" })
+      .where(and(eq(invoice.contractId, id), inArray(invoice.status, ["Draft", "Issued", "Overdue"])));
+  }
   revalidateOps();
+  revalidatePath("/admin/billing");
   return okEmpty();
 }
 
@@ -486,6 +526,7 @@ export async function sendManualNotification(input: {
   recipients: string;
   type: string;
   methods?: Array<"Email" | "SMS" | "WhatsApp" | "Push">;
+  message?: string;
 }): Promise<ActionResult> {
   await requireActionRole(["admin", "salesperson"]);
   await dispatchNotification(input);

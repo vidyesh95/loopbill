@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -17,7 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, Eye } from "lucide-react";
+import { Download, Eye, Lock, Unlock } from "lucide-react";
+import { setContractLocked } from "@/lib/actions/ops";
+import { issueInvoice } from "@/lib/actions/invoices";
 import type { ContractRow } from "@/lib/data/types";
 
 const allContracts: ContractRow[] = [
@@ -88,7 +94,12 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const renderContracts = (rows: ContractRow[]) => {
+function useContractActions() {
+  const router = useRouter();
+  return { router };
+}
+
+const renderContracts = (rows: ContractRow[], router: ReturnType<typeof useRouter>) => {
   if (rows.length === 0) {
     return <p>No contracts match the current filters.</p>;
   }
@@ -135,12 +146,39 @@ const renderContracts = (rows: ContractRow[]) => {
                 {contract.status}
               </span>
             </TableCell>
-            <TableCell>
-              <Button variant={"outline"} size={"sm"}>
-                <Eye />
+            <TableCell className="space-x-1">
+              <Button variant="outline" size="sm" asChild>
+                <a href={`/admin/billing?contract=${contract.contractId}`}>
+                  <Eye />
+                </a>
               </Button>
-              <Button size={"sm"} className="ml-1">
+              <Button
+                size="sm"
+                onClick={async () => {
+                  const result = await issueInvoice({ contractId: contract.contractId });
+                  if (!result.ok) {
+                    toast.error(result.error);
+                    return;
+                  }
+                  window.location.href = `/api/invoices/${result.data.id}/pdf`;
+                }}
+              >
                 <Download />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={async () => {
+                  const result = await setContractLocked(contract.contractId, !contract.locked);
+                  if (!result.ok) {
+                    toast.error(result.error);
+                    return;
+                  }
+                  toast.success(contract.locked ? "Unlocked" : "Locked");
+                  router.refresh();
+                }}
+              >
+                {contract.locked ? <Unlock /> : <Lock />}
               </Button>
             </TableCell>
           </TableRow>
@@ -155,6 +193,7 @@ export default function ContractsTable({
 }: {
   contracts?: ContractRow[];
 }) {
+  const { router } = useContractActions();
   const all = contracts;
   const active = contracts.filter((row) => row.status === "Active");
   const pending = contracts.filter(
@@ -184,7 +223,7 @@ export default function ContractsTable({
             <CardTitle>All customer contracts</CardTitle>
             <CardDescription>Complete list of all customer service contracts</CardDescription>
           </CardHeader>
-          <CardContent>{renderContracts(all)}</CardContent>
+          <CardContent>{renderContracts(all, router)}</CardContent>
           <CardFooter>
             <ContractsTablePagination />
           </CardFooter>
@@ -197,7 +236,7 @@ export default function ContractsTable({
             <CardTitle>Active contracts</CardTitle>
             <CardDescription>Currently active customer service contracts</CardDescription>
           </CardHeader>
-          <CardContent>{renderContracts(active)}</CardContent>
+          <CardContent>{renderContracts(active, router)}</CardContent>
           <CardFooter>
             <ContractsTablePagination />
           </CardFooter>
@@ -210,7 +249,7 @@ export default function ContractsTable({
             <CardTitle>Payment pending</CardTitle>
             <CardDescription>Contracts with pending or overdue payments</CardDescription>
           </CardHeader>
-          <CardContent>{renderContracts(pending)}</CardContent>
+          <CardContent>{renderContracts(pending, router)}</CardContent>
           <CardFooter>
             <ContractsTablePagination />
           </CardFooter>
@@ -223,7 +262,7 @@ export default function ContractsTable({
             <CardTitle>Expiring soon</CardTitle>
             <CardDescription>Contracts that are expiring within the next 30 days</CardDescription>
           </CardHeader>
-          <CardContent>{renderContracts(expiring)}</CardContent>
+          <CardContent>{renderContracts(expiring, router)}</CardContent>
           <CardFooter>
             <ContractsTablePagination />
           </CardFooter>

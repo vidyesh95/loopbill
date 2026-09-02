@@ -21,7 +21,8 @@ export const CONTRACT_STATUSES = ["Active", "Expiring Soon", "Expired"] as const
 export const PAYMENT_STATUSES = ["Paid", "Pending", "Overdue"] as const;
 export const PAYMENT_FREQUENCIES = ["Monthly", "Quarterly", "Half-yearly", "Yearly"] as const;
 
-export const USER_ROLES = ["admin", "salesperson", "agent"] as const;
+export const USER_ROLES = ["admin", "salesperson", "agent", "customer"] as const;
+export const INVOICE_STATUSES = ["Draft", "Issued", "Paid", "Overdue", "Void"] as const;
 export const USER_STATUSES = ["active", "inactive", "pending"] as const;
 
 export const LEAD_STATUSES = ["new", "contacted", "converted", "closed"] as const;
@@ -32,6 +33,7 @@ export const ROLE_LABELS = {
   admin: "Administrator",
   salesperson: "Sales Manager",
   agent: "Agent",
+  customer: "Customer",
 } as const;
 
 export function roleFromLabel(label: string) {
@@ -40,6 +42,9 @@ export function roleFromLabel(label: string) {
   }
   if (label === "Sales Manager") {
     return "salesperson";
+  }
+  if (label === "Customer") {
+    return "customer";
   }
   return "agent";
 }
@@ -50,6 +55,9 @@ export function roleLabel(role: string) {
   }
   if (role === "salesperson") {
     return ROLE_LABELS.salesperson;
+  }
+  if (role === "customer") {
+    return ROLE_LABELS.customer;
   }
   return ROLE_LABELS.agent;
 }

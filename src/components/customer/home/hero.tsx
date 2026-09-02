@@ -1,11 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { QuoteDialog } from "@/components/customer/quote-dialog";
-import { COMPANY_PHONES, whatsappUrl } from "@/lib/data/services";
-
-const primaryPhone = COMPANY_PHONES[1];
+import { usePublicCompany } from "@/components/customer/public-site-context";
+import { whatsappUrl } from "@/lib/data/services";
 
 export default function Hero() {
+  const company = usePublicCompany();
+  const primaryPhone = company.phones[1] ?? company.phones[0];
+  const title = company.hero.title;
+  const [lead, ...rest] = title.split(",");
+  const italic = rest.length ? rest.join(",") : "";
+
   return (
     <header className="relative overflow-hidden bg-[oklch(0.94_0.016_95)]">
       <div
@@ -19,24 +26,26 @@ export default function Hero() {
       <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-28">
         <div>
           <p className="text-xs font-semibold tracking-[0.22em] text-primary uppercase">
-            Mumbai to Palghar · by train or bus
+            {company.hero.eyebrow}
           </p>
           <h1 className="mt-4 max-w-xl font-display text-4xl leading-tight text-foreground md:text-6xl">
-            Pest-free homes and businesses,{" "}
-            <span className="text-primary italic">on your terms.</span>
+            {italic ? (
+              <>
+                {lead},<span className="text-primary italic">{italic}</span>
+              </>
+            ) : (
+              title
+            )}
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Residential rates by BHK. Commercial rates by square feet. The same treatments — bedbug,
-            cockroach, mosquito, rodent, termite, wood borer — booked on a call or WhatsApp.
-          </p>
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground">{company.hero.body}</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <QuoteDialog
               defaultSource="hero"
               trigger={<Button className="btn-primary">Get a free quote</Button>}
             />
             <Button asChild variant="outline">
-              <a href={whatsappUrl("I want to book a pest control service.")}>
-                WhatsApp {primaryPhone.display}
+              <a href={whatsappUrl("I want to book a pest control service.", company.whatsappNumber)}>
+                WhatsApp {primaryPhone?.display ?? company.phone}
               </a>
             </Button>
           </div>

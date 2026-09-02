@@ -4,6 +4,7 @@ import {
   complaint,
   contract,
   customer,
+  invoice,
   location,
   notification,
   notificationTemplate,
@@ -17,6 +18,7 @@ import type {
   ComplaintStatusRow,
   ContractRow,
   DashboardStats,
+  InvoiceRow,
   NotificationRow,
   NotificationTemplateRow,
   PendingComplaintRow,
@@ -52,7 +54,11 @@ function rupees(amount: number) {
 }
 
 export async function getStaffUsers(): Promise<StaffUserRow[]> {
-  const rows = await db.select().from(user).orderBy(user.createdAt);
+  const rows = await db
+    .select()
+    .from(user)
+    .where(ne(user.role, "customer"))
+    .orderBy(user.createdAt);
   const permissionRows = await db.select().from(userPermission);
 
   return rows.map((row, index) => {
@@ -134,6 +140,7 @@ export async function getContracts(): Promise<ContractRow[]> {
   const rows = await db
     .select({
       contractId: contract.id,
+      customerId: contract.customerId,
       customerName: customer.name,
       customerAddress: location.address,
       locationLabel: location.label,
@@ -145,6 +152,7 @@ export async function getContracts(): Promise<ContractRow[]> {
       expiryDate: contract.expiryDate,
       status: contract.status,
       paymentFrequency: contract.paymentFrequency,
+      locked: contract.locked,
     })
     .from(contract)
     .innerJoin(customer, eq(contract.customerId, customer.id))
@@ -153,6 +161,7 @@ export async function getContracts(): Promise<ContractRow[]> {
 
   return rows.map((row) => ({
     contractId: row.contractId,
+    customerId: row.customerId,
     customerName: row.customerName,
     customerAddress: row.customerAddress ?? row.locationLabel ?? "",
     serviceType: row.serviceType,
@@ -163,6 +172,7 @@ export async function getContracts(): Promise<ContractRow[]> {
     expiryDate: row.expiryDate,
     status: row.status,
     paymentFrequency: row.paymentFrequency,
+    locked: row.locked,
   }));
 }
 
@@ -177,6 +187,7 @@ export async function getNotifications(): Promise<NotificationRow[]> {
     status: row.status,
     dateTime: row.dateTime,
     actions: row.actions,
+    message: row.message,
   }));
 }
 
@@ -359,4 +370,42 @@ export async function getServiceTrends(): Promise<ServiceTrendRow[]> {
       services: stats.services,
       revenue: stats.revenue,
     }));
+}
+
+function stamp(value: Date | null | undefined) {
+  return value ? value.toISOString().slice(0, 10) : "";
+}
+
+export async function getInvoices(customerId?: number): Promise<InvoiceRow[]> {
+  const query = db
+    .select({
+      id: invoice.id,
+      number: invoice.number,
+      customerName: customer.name,
+      contractId: invoice.contractId,
+      amount: invoice.amount,
+      status: invoice.status,
+      issuedAt: invoice.issuedAt,
+      dueAt: invoice.dueAt,
+      paidAt: invoice.paidAt,
+      notes: invoice.notes,
+    })
+    .from(invoice)
+    .innerJoin(customer, eq(invoice.customerId, customer.id));
+  const rows = await (customerId
+    ? query.where(eq(invoice.customerId, customerId)).orderBy(invoice.id)
+    : query.orderBy(invoice.id));
+
+  return rows.map((row) => ({
+    id: row.id,
+    number: row.number,
+    customerName: row.customerName,
+    contractId: row.contractId,
+    amount: row.amount,
+    status: row.status,
+    issuedAt: stamp(row.issuedAt),
+    dueAt: stamp(row.dueAt),
+    paidAt: stamp(row.paidAt),
+    notes: row.notes,
+  }));
 }

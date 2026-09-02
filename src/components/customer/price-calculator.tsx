@@ -15,7 +15,6 @@ import { QuoteDialog } from "@/components/customer/quote-dialog";
 import {
   BHK_OPTIONS,
   DURATION_OPTIONS,
-  PRICED_SERVICES,
   SQFT_OPTIONS,
   calculatePrice,
   describeQuote,
@@ -26,6 +25,7 @@ import {
   type PricedServiceSlug,
 } from "@/lib/data/pricing";
 import type { PropertyType } from "@/lib/data/services";
+import { usePublicPricing } from "@/components/customer/public-site-context";
 
 type PriceCalculatorProps = {
   propertyType?: PropertyType;
@@ -38,7 +38,8 @@ export function PriceCalculator({
   defaultService,
   source,
 }: PriceCalculatorProps) {
-  const initialService = isPricedServiceSlug(defaultService ?? "") ? defaultService : "cockroach";
+  const rates = usePublicPricing();
+  const initialService = isPricedServiceSlug(defaultService ?? "") ? defaultService : (rates[0]?.slug ?? "cockroach");
 
   const [service, setService] = useState<PricedServiceSlug>(initialService as PricedServiceSlug);
   const [bhk, setBhk] = useState<BhkValue>("1bhk");
@@ -48,8 +49,8 @@ export function PriceCalculator({
 
   const area = propertyType === "Residential" ? bhk : sqft;
   const price = useMemo(
-    () => calculatePrice({ propertyType, service, area, duration }),
-    [propertyType, service, area, duration],
+    () => calculatePrice({ propertyType, service, area, duration, rates }),
+    [propertyType, service, area, duration, rates],
   );
 
   const quoteMessage = describeQuote({
@@ -59,6 +60,7 @@ export function PriceCalculator({
     duration,
     pincode,
     price,
+    rates,
   });
 
   const durationLabel = DURATION_OPTIONS.find((option) => option.value === duration)?.label;
@@ -88,7 +90,7 @@ export function PriceCalculator({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PRICED_SERVICES.map((item) => (
+              {rates.map((item) => (
                 <SelectItem key={item.slug} value={item.slug}>
                   {item.label}
                 </SelectItem>

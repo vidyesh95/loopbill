@@ -1,3 +1,17 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  DndContext,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
 import {
   Dialog,
   DialogContent,
@@ -5,168 +19,161 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-import { format, isSameDay } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { addMonths, format, isSameDay, startOfMonth, startOfWeek } from "date-fns";
+import { rescheduleService } from "@/lib/actions/ops";
 
-interface Service {
+export type CalendarService = {
   id: number;
   customer: string;
   serviceType: string;
   date: string;
+  scheduledAt?: string | Date | null;
   agent: string;
   status: string;
-  location: string;
-  phone: string;
-  amount: string;
+};
+
+function jobDate(service: CalendarService) {
+  if (service.scheduledAt) {
+    return new Date(service.scheduledAt);
+  }
+  const parsed = new Date(service.date);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 }
 
-interface CalendarViewProps {
+function DraggableJob({ service }: { service: CalendarService }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `job-${service.id}`,
+    data: { serviceId: service.id },
+  });
+  return (
+    <button
+      type="button"
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className="w-full truncate rounded border bg-background px-1 py-0.5 text-left text-xs"
+      style={{
+        opacity: isDragging ? 0.4 : 1,
+        transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+      }}
+    >
+      #{service.id} {service.customer}
+    </button>
+  );
+}
+
+function DayCell({
+  date,
+  jobs,
+}: {
+  date: Date;
+  jobs: CalendarService[];
+}) {
+  const id = format(date, "yyyy-MM-dd");
+  const { setNodeRef, isOver } = useDroppable({ id, data: { date: id } });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`min-h-24 rounded-md border p-1 ${isOver ? "border-primary bg-primary/5" : ""}`}
+    >
+      <p className="text-xs text-muted-foreground">{format(date, "d")}</p>
+      <div className="mt-1 space-y-1">
+        {jobs.map((job) => (
+          <DraggableJob key={job.id} service={job} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function CalendarView({
+  isOpen,
+  onClose,
+  services,
+  allowOverride = false,
+}: {
   isOpen: boolean;
   onClose: () => void;
-  services: Service[];
-}
+  services: CalendarService[];
+  allowOverride?: boolean;
+}) {
+  const router = useRouter();
+  const [month, setMonth] = useState(startOfMonth(new Date()));
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-const CalendarView = ({ isOpen, onClose, services }: CalendarViewProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Completed":
-        return "bg-green-100 text-green-700";
-      case "In progress":
-        return "bg-blue-100 text-blue-700";
-      case "Scheduled":
-        return "bg-yellow-100 text-yellow-700";
-      case "Redo Required":
-        return "bg-red-100 text-red-700";
-      case "Expired":
-        return "bg-gray-100 text-gray-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
-  const getServicesForDate = (date: Date) => {
-    return services.filter((service) => {
-      try {
-        const serviceDate = new Date(service.date);
-        return isSameDay(serviceDate, date);
-      } catch {
-        return false;
-      }
+  const days = useMemo(() => {
+    const start = startOfWeek(month, { weekStartsOn: 1 });
+    return Array.from({ length: 42 }, (_, index) => {
+      const date = new Date(start);
+      date.setDate(start.getDate() + index);
+      return date;
     });
-  };
+  }, [month]);
 
-  const selectedDateServices = getServicesForDate(selectedDate);
+  async function onDragEnd(event: DragEndEvent) {
+    const serviceId = event.active.data.current?.serviceId as number | undefined;
+    const date = event.over?.data.current?.date as string | undefined;
+    if (!serviceId || !date) {
+      return;
+    }
+    const result = await rescheduleService({
+      serviceId,
+      date,
+      override: allowOverride,
+    });
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success(`Moved #${serviceId} to ${date}`);
+    router.refresh();
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[80vh] overflow-auto sm:max-w-225">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Calendar View</DialogTitle>
-          <DialogDescription>View and manage services by date</DialogDescription>
+          <DialogTitle>Service calendar</DialogTitle>
+          <DialogDescription>
+            Drag a job onto a day to reschedule. Dates outside 90–120 days are blocked unless
+            overridden.
+          </DialogDescription>
         </DialogHeader>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
-              className="rounded-md border"
-              modifiers={{
-                hasService: (date) => getServicesForDate(date).length > 0,
-              }}
-              modifiersClassNames={{
-                hasService: "bg-google-blue/20 text-google-blue font-semibold",
-              }}
-            />
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="bg-google-blue/20 h-3 w-3 rounded"></div>
-                <span>Days with scheduled services</span>
-              </div>
-            </div>
+        <div className="mb-3 flex items-center justify-between">
+          <Button variant="outline" size="sm" onClick={() => setMonth(addMonths(month, -1))}>
+            Previous
+          </Button>
+          <p className="font-medium">{format(month, "MMMM yyyy")}</p>
+          <Button variant="outline" size="sm" onClick={() => setMonth(addMonths(month, 1))}>
+            Next
+          </Button>
+        </div>
+        <DndContext sensors={sensors} onDragEnd={onDragEnd}>
+          <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+              <div key={day}>{day}</div>
+            ))}
           </div>
-
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  Services for {format(selectedDate, "MMMM d, yyyy")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {selectedDateServices.length === 0 ? (
-                  <p className="py-8 text-center text-muted-foreground">
-                    No services scheduled for this date
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {selectedDateServices.map((service) => (
-                      <div
-                        key={service.id}
-                        className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
-                      >
-                        <div className="mb-2 flex items-start justify-between">
-                          <div>
-                            <p className="font-medium">{service.customer}</p>
-                            <p className="text-sm text-muted-foreground">{service.serviceType}</p>
-                          </div>
-                          <Badge className={getStatusColor(service.status)}>{service.status}</Badge>
-                        </div>
-                        <div className="space-y-1 text-sm text-muted-foreground">
-                          <p>Agent: {service.agent}</p>
-                          <p>Location: {service.location}</p>
-                          <p>Amount: {service.amount}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <div className="mt-4">
-              <h4 className="mb-2 font-medium">Quick Stats</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="rounded bg-green-50 p-2">
-                  <p className="font-medium text-green-700">
-                    {services.filter((s) => s.status === "Completed").length}
-                  </p>
-                  <p className="text-green-600">Completed</p>
-                </div>
-                <div className="rounded bg-blue-50 p-2">
-                  <p className="font-medium text-blue-700">
-                    {
-                      services.filter((s) => s.status === "Scheduled" || s.status === "In progress")
-                        .length
-                    }
-                  </p>
-                  <p className="text-blue-600">Upcoming</p>
-                </div>
-                <div className="rounded bg-red-50 p-2">
-                  <p className="font-medium text-red-700">
-                    {services.filter((s) => s.status === "Redo Required").length}
-                  </p>
-                  <p className="text-red-600">Redo Required</p>
-                </div>
-                <div className="rounded bg-gray-50 p-2">
-                  <p className="font-medium text-gray-700">
-                    {services.filter((s) => s.status === "Expired").length}
-                  </p>
-                  <p className="text-gray-600">Expired</p>
-                </div>
-              </div>
-            </div>
+          <div className="mt-1 grid grid-cols-7 gap-1">
+            {days.map((date) => (
+              <DayCell
+                key={date.toISOString()}
+                date={date}
+                jobs={services.filter((service) => isSameDay(jobDate(service), date))}
+              />
+            ))}
           </div>
+        </DndContext>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {["Scheduled", "Completed", "Reschedule required"].map((status) => (
+            <Badge key={status} variant="outline">
+              {status}
+            </Badge>
+          ))}
         </div>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default CalendarView;
+}

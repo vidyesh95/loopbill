@@ -1,21 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { QuoteDialog } from "@/components/customer/quote-dialog";
-import {
-  COMPANY_EMAIL,
-  COMPANY_PHONES,
-  OTHER_SERVICES,
-  PEST_SERVICES,
-  whatsappUrl,
-} from "@/lib/data/services";
+import { usePublicCompany, usePublishedServices, usePublicSite } from "@/components/customer/public-site-context";
+import { whatsappUrl } from "@/lib/data/services";
 
 export default function Footer() {
+  const company = usePublicCompany();
+  const services = usePublishedServices();
+  const { accountHref } = usePublicSite();
+  const pest = services.filter((item) => item.category === "pest");
+  const other = services.filter((item) => item.category === "other");
   return (
     <footer className="bg-[oklch(0.3_0.04_145)] text-[oklch(0.93_0.015_95)]">
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
           <div>
-            <h3 className="font-display text-2xl">Urban Pest Master</h3>
+            <h3 className="font-display text-2xl">
+              {company.name.replace("Private Limited", "").trim() || "Urban Pest Master"}
+            </h3>
             <p className="mt-3 text-sm text-[oklch(0.84_0.02_95)]">
               Pest control from Mumbai to Palghar, by train or bus, with WhatsApp booking and
               published residential and commercial rates.
@@ -66,8 +70,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/signin" className="hover:text-white">
-                  Staff sign in
+                <Link href={accountHref === "/account" ? "/account" : "/signin"} className="hover:text-white">
+                  {accountHref === "/account" ? "My account" : "Sign in"}
                 </Link>
               </li>
             </ul>
@@ -81,14 +85,14 @@ export default function Footer() {
                   All services
                 </Link>
               </li>
-              {PEST_SERVICES.map((service) => (
+              {pest.map((service) => (
                 <li key={service.slug}>
                   <Link href={`/services/${service.slug}`} className="hover:text-white">
                     {service.title}
                   </Link>
                 </li>
               ))}
-              {OTHER_SERVICES.map((service) => (
+              {other.map((service) => (
                 <li key={service.slug}>
                   <Link href={`/services/${service.slug}`} className="hover:text-white">
                     {service.title}
@@ -139,16 +143,16 @@ export default function Footer() {
             <address className="text-sm text-[oklch(0.84_0.02_95)] not-italic">
               <ul className="space-y-2">
                 <li>
-                  <a href={`mailto:${COMPANY_EMAIL}`}>{COMPANY_EMAIL}</a>
+                  <a href={`mailto:${company.email}`}>{company.email}</a>
                 </li>
-                {COMPANY_PHONES.map((phone) => (
+                {company.phones.map((phone) => (
                   <li key={phone.href}>
                     <a href={phone.href}>{phone.display}</a>
                   </li>
                 ))}
                 <li>
                   <Button asChild variant="secondary" size="sm">
-                    <a href={whatsappUrl()} target="_blank" rel="noreferrer">
+                    <a href={whatsappUrl(undefined, company.whatsappNumber)} target="_blank" rel="noreferrer">
                       WhatsApp us
                     </a>
                   </Button>

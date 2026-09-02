@@ -15,6 +15,7 @@ import {
   complaint,
   contract,
   customer,
+  invoice,
   lead,
   location,
   notification,
@@ -34,6 +35,7 @@ import {
   verification,
 } from "./schema";
 import { COMPANY_STATS, SERVICE_STATIONS, SERVICES } from "../data/services";
+import { DEFAULT_CREW, DEFAULT_FEATURES } from "../data/site-defaults";
 import { PRICED_SERVICES } from "../data/pricing";
 import { addDays as addLifecycleDays, complaintAdminVisibleAt } from "../lifecycle";
 
@@ -874,6 +876,7 @@ async function reset() {
   await db.delete(notification);
   await db.delete(notificationTemplate);
   await db.delete(complaint);
+  await db.delete(invoice);
   await db.delete(service);
   await db.delete(contract);
   await db.delete(location);
@@ -1014,6 +1017,33 @@ async function seed() {
 
   const customers = await db.select().from(customer);
   const customerByName = new Map(customers.map((item) => [item.name, item]));
+  const portalCustomer = customers[0];
+  if (portalCustomer) {
+    const portalId = "customer_portal_demo";
+    await db.insert(user).values({
+      id: portalId,
+      name: portalCustomer.name,
+      email: portalCustomer.email || "customer@urbanpestmaster.in",
+      emailVerified: true,
+      createdAt: now,
+      updatedAt: now,
+      role: "customer",
+      phone: portalCustomer.phone,
+      department: "Customer",
+      status: "active",
+    });
+    await db.insert(account).values({
+      id: `acc_${portalId}`,
+      accountId: portalId,
+      providerId: "credential",
+      issuer: createLocalAccountIssuer("credential"),
+      userId: portalId,
+      password: passwordHash,
+      createdAt: now,
+      updatedAt: now,
+    });
+    await db.update(customer).set({ userId: portalId }).where(eq(customer.id, portalCustomer.id));
+  }
 
   await db.insert(location).values(
     allCustomers.map((item) => {
@@ -1104,6 +1134,22 @@ async function seed() {
 
   const contracts = await db.select().from(contract);
   const contractByCustomerId = new Map(contracts.map((item) => [item.customerId, item]));
+  await db.insert(invoice).values(
+    contracts.slice(0, 12).map((row, index) => {
+      const issuedAt = row.purchasedAt ?? new Date("2025-04-01");
+      return {
+        contractId: row.id,
+        customerId: row.customerId,
+        number: `INV-${String(index + 1).padStart(5, "0")}`,
+        amount: row.contractValue,
+        status: row.paymentStatus === "Paid" ? "Paid" : row.locked ? "Void" : "Issued",
+        issuedAt,
+        dueAt: addDays(issuedAt, 30),
+        paidAt: row.paymentStatus === "Paid" ? issuedAt : null,
+        notes: row.serviceType,
+      };
+    }),
+  );
 
   for (const item of existingServices) {
     const customerRow = customerByName.get(item.customer);
@@ -1268,6 +1314,10 @@ async function seed() {
     { key: "maxReschedules", value: "2" },
     { key: "officeHours", value: "Mon–Sat 9:00 AM – 7:00 PM" },
     { key: "whatsappNumber", value: "918600139094" },
+    { key: "channelEmail", value: "true" },
+    { key: "channelSms", value: "true" },
+    { key: "channelWhatsapp", value: "true" },
+    { key: "channelPush", value: "false" },
   ]);
 
   await db.insert(siteService).values(
@@ -1329,6 +1379,8 @@ async function seed() {
     { key: "stations", value: JSON.stringify(SERVICE_STATIONS) },
     { key: "hours", value: "Mon–Sat 9:00 AM – 7:00 PM" },
     { key: "whatsappNumber", value: "918600139094" },
+    { key: "features", value: JSON.stringify(DEFAULT_FEATURES) },
+    { key: "crew", value: JSON.stringify(DEFAULT_CREW) },
   ]);
 
   const completedJobs = await db.select().from(service).where(eq(service.status, "Completed"));
@@ -1343,6 +1395,11 @@ async function seed() {
   const admin = existingStaff.find((staff) => staff.role === "admin");
   console.log(`Seeded ${existingStaff.length} staff (password: ${DEV_PASSWORD})`);
   console.log(`Admin login: ${admin?.email} / ${DEV_PASSWORD}`);
+  if (portalCustomer) {
+    console.log(
+      `Customer portal: ${portalCustomer.email || "customer@urbanpestmaster.in"} / ${DEV_PASSWORD}`,
+    );
+  }
 }
 
 seed()

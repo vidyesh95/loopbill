@@ -48,17 +48,25 @@ export function isPricedServiceSlug(value: string): value is PricedServiceSlug {
   return PRICED_SERVICES.some((service) => service.slug === value);
 }
 
-export function getPricedService(slug: string) {
-  return PRICED_SERVICES.find((service) => service.slug === slug);
+export type PricedServiceRate = {
+  slug: string;
+  label: string;
+  residentialBase: number;
+  commercialPerSqft: number;
+};
+
+export function getPricedService(slug: string, rates: readonly PricedServiceRate[] = PRICED_SERVICES) {
+  return rates.find((service) => service.slug === slug);
 }
 
 export function calculatePrice(input: {
   propertyType: PropertyType;
-  service: PricedServiceSlug;
+  service: string;
   area: BhkValue | number;
   duration: DurationValue;
+  rates?: readonly PricedServiceRate[];
 }): number {
-  const service = getPricedService(input.service);
+  const service = getPricedService(input.service, input.rates);
   const duration = DURATION_OPTIONS.find((option) => option.value === input.duration);
   if (!service || !duration) {
     return 0;
@@ -92,13 +100,14 @@ export function formatInr(amount: number) {
 
 export function describeQuote(input: {
   propertyType: PropertyType;
-  service: PricedServiceSlug;
+  service: string;
   area: BhkValue | number;
   duration: DurationValue;
   pincode?: string;
   price: number;
+  rates?: readonly PricedServiceRate[];
 }) {
-  const service = getPricedService(input.service);
+  const service = getPricedService(input.service, input.rates);
   const duration = DURATION_OPTIONS.find((option) => option.value === input.duration);
   const areaLabel =
     input.propertyType === "Residential"

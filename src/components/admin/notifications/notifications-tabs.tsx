@@ -148,7 +148,7 @@ export default function NotificationsTabs({
     (notification) => notification.status !== "Scheduled",
   );
   const scheduledNotifications = notifications.filter(
-    (notification) => notification.status !== "Delivered" && notification.status !== "Sending",
+    (notification) => notification.status === "Scheduled",
   );
 
   return (
@@ -219,7 +219,7 @@ export default function NotificationsTabs({
             <CardDescription>Insights into notification delivery and engagement</CardDescription>
           </CardHeader>
           <CardContent>
-            <NotificationAnalytics />
+            <NotificationAnalytics notifications={notifications} />
           </CardContent>
         </Card>
       </TabsContent>

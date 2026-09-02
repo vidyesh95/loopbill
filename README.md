@@ -24,7 +24,7 @@ Open [http://localhost:3000](http://localhost:3000) and sign in as:
 - Email: `vidyesh95@gmail.com`
 - Password: `Password123!`
 
-Other seeded staff use the same password. Customers are records only — they do not get portal logins.
+Other seeded staff use the same password. One seeded customer has a portal login at `/account` using that customer's email and `Password123!`.
 
 ## Database
 

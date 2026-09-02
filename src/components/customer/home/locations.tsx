@@ -1,7 +1,10 @@
+"use client";
+
 import { EnquiryForm } from "@/components/customer/enquiry-form";
-import { BRANCHES, COMPANY_STATS, SERVICE_STATIONS } from "@/lib/data/services";
+import { usePublicCompany } from "@/components/customer/public-site-context";
 
 export function Locations() {
+  const company = usePublicCompany();
   return (
     <section className="bg-[oklch(0.94_0.016_95)] py-20">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-2 lg:items-start">
@@ -15,7 +18,7 @@ export function Locations() {
             train or bus.
           </p>
           <ul className="mt-8 grid gap-4 sm:grid-cols-3">
-            {COMPANY_STATS.map((stat) => (
+            {company.stats.map((stat) => (
               <li
                 key={stat.label}
                 className="rounded-2xl border border-[oklch(0.78_0.02_95)] bg-[oklch(0.99_0.008_95)] p-5"
@@ -26,7 +29,7 @@ export function Locations() {
             ))}
           </ul>
           <ul className="mt-8 space-y-5">
-            {SERVICE_STATIONS.map((group) => (
+            {company.stations.map((group) => (
               <li key={group.region}>
                 <p className="text-sm font-semibold">{group.region}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{group.stations.join(" · ")}</p>
@@ -37,7 +40,7 @@ export function Locations() {
             Offices
           </h3>
           <ul className="mt-4 space-y-4">
-            {BRANCHES.map((branch) => (
+            {company.branches.map((branch) => (
               <li key={branch.name}>
                 <p className="font-semibold">{branch.name} branch</p>
                 <p className="text-muted-foreground">{branch.address}</p>

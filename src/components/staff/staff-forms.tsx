@@ -470,6 +470,7 @@ export function NotificationDialog({
       subject: formString(formData, "subject"),
       recipients: formString(formData, "recipients"),
       type: formString(formData, "type", "Service Reminder"),
+      message: formString(formData, "message"),
       methods: methods.length ? methods : ["WhatsApp", "SMS"],
     });
     setPending(false);
@@ -500,6 +501,9 @@ export function NotificationDialog({
           </Field>
           <Field label="Subject">
             <Input name="subject" required />
+          </Field>
+          <Field label="Message">
+            <Input name="message" placeholder="Optional body logged with the send" />
           </Field>
           <div className="flex flex-wrap gap-3 text-sm">
             {["WhatsApp", "SMS", "Email", "Push"].map((item) => (

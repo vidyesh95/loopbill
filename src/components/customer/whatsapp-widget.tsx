@@ -11,6 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { whatsappUrl } from "@/lib/data/services";
+import { usePublicCompany } from "@/components/customer/public-site-context";
 
 const INTENTS = [
   {
@@ -29,6 +30,7 @@ const INTENTS = [
 ] as const;
 
 export function WhatsappWidget() {
+  const { whatsappNumber } = usePublicCompany();
   return (
     <div className="fixed right-4 bottom-4 z-50 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
       <Sheet>
@@ -53,7 +55,7 @@ export function WhatsappWidget() {
             {INTENTS.map((intent) => (
               <li key={intent.label}>
                 <a
-                  href={whatsappUrl(intent.message)}
+                  href={whatsappUrl(intent.message, whatsappNumber)}
                   target="_blank"
                   rel="noreferrer"
                   className="block rounded-xl border border-[oklch(0.86_0.015_95)] px-4 py-3 text-sm hover:border-primary hover:bg-[oklch(0.965_0.012_95)]"
@@ -67,7 +69,7 @@ export function WhatsappWidget() {
       </Sheet>
 
       <a
-        href={whatsappUrl()}
+        href={whatsappUrl(undefined, whatsappNumber)}
         target="_blank"
         rel="noreferrer"
         className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition hover:scale-105"

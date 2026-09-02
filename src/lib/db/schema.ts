@@ -109,6 +109,7 @@ export const customer = sqliteTable("customer", {
   phone: text("phone"),
   email: text("email"),
   salespersonId: text("salesperson_id").references(() => user.id, { onDelete: "set null" }),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
 });
 
 export const location = sqliteTable("location", {
@@ -121,6 +122,8 @@ export const location = sqliteTable("location", {
   building: text("building"),
   wing: text("wing"),
   flatNo: text("flat_no"),
+  lat: text("lat"),
+  lng: text("lng"),
 });
 
 export const contract = sqliteTable("contract", {
@@ -203,6 +206,7 @@ export const notification = sqliteTable("notification", {
   status: text("status").notNull(),
   dateTime: text("date_time").notNull(),
   actions: text("actions").notNull(),
+  message: text("message"),
 });
 
 export const lead = sqliteTable("lead", {
@@ -267,4 +271,19 @@ export const sitePricing = sqliteTable("site_pricing", {
 export const siteContent = sqliteTable("site_content", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
+});
+
+export const invoice = sqliteTable("invoice", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  contractId: integer("contract_id").references(() => contract.id, { onDelete: "set null" }),
+  customerId: integer("customer_id")
+    .notNull()
+    .references(() => customer.id, { onDelete: "cascade" }),
+  number: text("number").notNull().unique(),
+  amount: integer("amount").notNull(),
+  status: text("status").notNull(),
+  issuedAt: integer("issued_at", { mode: "timestamp_ms" }),
+  dueAt: integer("due_at", { mode: "timestamp_ms" }),
+  paidAt: integer("paid_at", { mode: "timestamp_ms" }),
+  notes: text("notes"),
 });

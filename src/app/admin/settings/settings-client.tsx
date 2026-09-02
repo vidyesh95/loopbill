@@ -13,6 +13,7 @@ import {
   updateAppSettings,
   updateCompanySettings,
 } from "@/lib/actions/settings";
+import { upsertSitePricing } from "@/lib/actions/cms";
 import { formString } from "@/lib/utils";
 
 type Branch = { id?: number; name: string; address: string };
@@ -23,12 +24,28 @@ export default function SettingsClient({
   remindersEnabled,
   maxReschedules,
   officeHours,
+  channelEmail,
+  channelSms,
+  channelWhatsapp,
+  channelPush,
+  pricing,
 }: {
   company: { name: string; address: string; email: string; phone: string };
   branches: Branch[];
   remindersEnabled: boolean;
   maxReschedules: number;
   officeHours: string;
+  channelEmail: boolean;
+  channelSms: boolean;
+  channelWhatsapp: boolean;
+  channelPush: boolean;
+  pricing: Array<{
+    id: number;
+    slug: string;
+    label: string;
+    residentialBase: number;
+    commercialPerSqft: number;
+  }>;
 }) {
   const router = useRouter();
   const [localBranches, setLocalBranches] = useState(branches);
@@ -42,6 +59,7 @@ export default function SettingsClient({
       <Tabs defaultValue="company">
         <TabsList className="w-full">
           <TabsTrigger value="company">Company</TabsTrigger>
+          <TabsTrigger value="pricing">Pricing</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="jobs">Daily jobs</TabsTrigger>
         </TabsList>
@@ -116,6 +134,37 @@ export default function SettingsClient({
             <Button type="submit">Save company</Button>
           </form>
         </TabsContent>
+        <TabsContent value="pricing" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Commercial ₹/sqft and residential base rates used by the public price calculator.
+          </p>
+          {pricing.map((item) => (
+            <form
+              key={item.id}
+              className="grid gap-2 rounded-md border p-3 md:grid-cols-4"
+              action={async (formData) => {
+                const result = await upsertSitePricing({
+                  id: item.id,
+                  slug: item.slug,
+                  label: formString(formData, "label", item.label),
+                  residentialBase: Number(formData.get("residentialBase") || 0),
+                  commercialPerSqft: Number(formData.get("commercialPerSqft") || 0),
+                });
+                if (!result.ok) {
+                  toast.error(result.error);
+                  return;
+                }
+                toast.success("Pricing saved");
+                router.refresh();
+              }}
+            >
+              <Input name="label" defaultValue={item.label} />
+              <Input name="residentialBase" type="number" defaultValue={item.residentialBase} />
+              <Input name="commercialPerSqft" type="number" defaultValue={item.commercialPerSqft} />
+              <Button type="submit">Save</Button>
+            </form>
+          ))}
+        </TabsContent>
         <TabsContent value="notifications">
           <form
             className="max-w-xl space-y-3"
@@ -124,6 +173,10 @@ export default function SettingsClient({
                 remindersEnabled: formData.get("remindersEnabled") === "on",
                 maxReschedules: Number(formData.get("maxReschedules") || 2),
                 officeHours: formString(formData, "officeHours"),
+                channelEmail: formData.get("channelEmail") === "on",
+                channelSms: formData.get("channelSms") === "on",
+                channelWhatsapp: formData.get("channelWhatsapp") === "on",
+                channelPush: formData.get("channelPush") === "on",
               });
               if (!result.ok) {
                 toast.error(result.error);
@@ -143,6 +196,25 @@ export default function SettingsClient({
             <Field label="Office hours">
               <Input name="officeHours" defaultValue={officeHours} />
             </Field>
+            <div className="space-y-2 text-sm">
+              <p className="font-medium">Outbound channels (logged only)</p>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" name="channelEmail" defaultChecked={channelEmail} />
+                Email
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" name="channelSms" defaultChecked={channelSms} />
+                SMS
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" name="channelWhatsapp" defaultChecked={channelWhatsapp} />
+                WhatsApp
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" name="channelPush" defaultChecked={channelPush} />
+                Push
+              </label>
+            </div>
             <Button type="submit">Save settings</Button>
           </form>
         </TabsContent>

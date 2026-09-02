@@ -1,36 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { PriceCalculator } from "@/components/customer/price-calculator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const frequentlyAskedQuestions = [
-  {
-    question: "How is the price calculated?",
-    answer:
-      "Homes are priced by pest type, BHK size, and duration. Commercial sites are priced by pest type, square feet, and the same One Time / 1 Year / 2 Year options.",
-  },
-  {
-    question: "What is the difference between One Time and a 1 or 2 Year plan?",
-    answer:
-      "One Time is a single treatment. 1 Year and 2 Year are annual maintenance contracts at 1.1× and 1.2× the one-time rate, with return visits as the contract specifies.",
-  },
-  {
-    question: "Do you re-treat if pests come back?",
-    answer:
-      "If pests return after a scheduled treatment, tell us in the same calendar month and we will arrange a re-service.",
-  },
-  {
-    question: "Why is there no price for Invisible Grill, Bird Proofing, or Rat Guard?",
-    answer:
-      "Those jobs are measured on site. Send an enquiry and we will quote after we see the openings or roosts.",
-  },
-];
+import { usePublicCompany } from "@/components/customer/public-site-context";
 
 type PricingProps = {
   defaultPropertyType?: "Residential" | "Commercial";
   defaultService?: string;
 };
 
-const Pricing = ({ defaultPropertyType = "Residential", defaultService }: PricingProps) => (
+const Pricing = ({ defaultPropertyType = "Residential", defaultService }: PricingProps) => {
+  const { faq } = usePublicCompany();
+  const frequentlyAskedQuestions = faq.length > 0 ? faq : [];
+  return (
   <section id="pricing" className="bg-[oklch(0.965_0.012_95)]">
     <header className="px-4 pt-20 text-center">
       <div className="mx-auto max-w-3xl">
@@ -107,6 +90,7 @@ const Pricing = ({ defaultPropertyType = "Residential", defaultService }: Pricin
       </div>
     </section>
   </section>
-);
+  );
+};
 
 export default Pricing;
