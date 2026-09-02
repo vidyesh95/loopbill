@@ -1,5 +1,5 @@
 import {config} from "dotenv";
-import {createLocalAccountIssuer} from "@better-auth/core/db";
+import {createLocalAccountIssuer} from "better-auth/db";
 import {hashPassword} from "better-auth/crypto";
 
 config({path: ".env.local"});
