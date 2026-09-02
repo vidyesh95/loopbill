@@ -5,6 +5,7 @@ import Features from "@/components/customer/home/features";
 import Hero from "@/components/customer/home/hero";
 import CallToAction from "@/components/customer/home/callToAction";
 import {Locations} from "@/components/customer/home/locations";
+import {Crew} from "@/components/customer/home/crew";
 import {ServiceCatalog} from "@/components/customer/home/service-catalog";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
             <Hero />
             <main>
                 <Features />
+                <Crew />
                 <ServiceCatalog />
                 <CallToAction />
                 <Pricing />
